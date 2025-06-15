@@ -12,6 +12,83 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.FlagQuiz"
         tools:targetApi="31">
+<!--        <activity-->
+<!--            android:name=".ActivityQuiz"-->
+<!--            android:exported="true"-->
+<!--            android:label="@string/title_activity_quiz"-->
+<!--            android:theme="@style/Theme.FlagQuiz">-->
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.MAIN" />-->
+
+<!--                <category android:name="android.intent.category.LAUNCHER" />-->
+<!--            </intent-filter>-->
+<!--        </activity>-->
+        <activity
+            android:name=".WelcomeActivity"
+            android:exported="true"
+            android:label="@string/title_activity_welcome"
+            android:theme="@style/Theme.FlagQuiz">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".SplashActivity"
+            android:exported="true"
+            android:label="@string/title_activity_splash"
+            android:theme="@style/Theme.FlagQuiz">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".DashboardActivity"
+            android:exported="true"
+            android:label="@string/title_activity_dashboard"
+            android:theme="@style/Theme.FlagQuiz">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".SignupActivity"
+            android:exported="true"
+            android:label="@string/title_activity_signup"
+            android:theme="@style/Theme.FlagQuiz">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+<!--        <activity-->
+<!--            android:name=".QuizActivity"-->
+<!--            android:exported="true"-->
+<!--            android:label="@string/title_activity_quiz"-->
+<!--            android:theme="@style/Theme.FlagQuiz">-->
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.MAIN" />-->
+
+<!--                <category android:name="android.intent.category.LAUNCHER" />-->
+<!--            </intent-filter>-->
+<!--        </activity>-->
+        <activity
+            android:name=".LoginActivity"
+            android:exported="true"
+            android:label="@string/title_activity_login"
+            android:theme="@style/Theme.FlagQuiz">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".view.NavigationActivity"
             android:exported="true"
