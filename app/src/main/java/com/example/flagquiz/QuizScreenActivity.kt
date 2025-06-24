@@ -1,7 +1,5 @@
 package com.example.flagquiz
 
-import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -10,7 +8,6 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -37,7 +34,6 @@ class QuizScreenActivity : ComponentActivity() {
         setContent {
             FlagQuizTheme {
                 Scaffold { innerPadding ->
-
                     val dummyQuestion = FlagQuestion(
                         id = 1,
                         flagResId = R.drawable.bhutan,
@@ -118,18 +114,9 @@ fun QuizScreen(
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 question.options.forEach { option ->
-                    val isOptionSelected = selectedOption == option
-
-
-                    val buttonColor = when {
-                        answerSubmitted && isOptionSelected -> {
-                            if (isCorrectAnswer == true) Color.Green.copy(alpha = 0.7f)
-                            else Color.Red.copy(alpha = 0.7f)
-                        }
-                        answerSubmitted && option == question.correctAnswer && !isCorrectAnswer!! -> {
-                            Color.Green.copy(alpha = 0.4f)
-                        }
-                        isOptionSelected -> Color(0xFFF97B57).copy(alpha = 0.7f)
+                    val backgroundColor = when {
+                        answerSubmitted && option == question.correctAnswer -> Color(0xFF00C853)
+                        answerSubmitted && option == selectedOption && option != question.correctAnswer -> Color(0xFFD50000)
                         else -> Color.White
                     }
 
@@ -138,25 +125,23 @@ fun QuizScreen(
                             if (!answerSubmitted) {
                                 selectedOption = option
                                 answerSubmitted = true
-                                val correct = (option == question.correctAnswer)
-                                isCorrectAnswer = correct
+                                isCorrectAnswer = option == question.correctAnswer
 
-                                if (correct) {
-                                    Toast.makeText(context, "Correct!", Toast.LENGTH_SHORT).show()
-                                } else {
-                                    Toast.makeText(context, "Wrong! The answer was ${question.correctAnswer}", Toast.LENGTH_SHORT).show()
-                                }
+                                Toast.makeText(
+                                    context,
+                                    if (isCorrectAnswer == true) "Correct!" else "Wrong! The answer was ${question.correctAnswer}",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
                         },
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(56.dp),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = buttonColor,
+                            containerColor = backgroundColor,
                             contentColor = Color.Black
                         ),
                         shape = RoundedCornerShape(12.dp),
-                        elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp),
                         enabled = !answerSubmitted
                     ) {
                         Text(
@@ -170,7 +155,6 @@ fun QuizScreen(
             }
 
             Spacer(modifier = Modifier.height(32.dp))
-
 
             Button(
                 onClick = {
@@ -199,6 +183,12 @@ fun QuizScreen(
     }
 }
 
+data class FlagQuestion(
+    val id: Int,
+    val flagResId: Int,
+    val options: List<String>,
+    val correctAnswer: String
+)
 
 @Preview(showBackground = true)
 @Composable
