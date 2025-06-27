@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.flagquiz.ui.theme.FlagQuizTheme
 import com.example.flagquiz.model.FlagQuestion
+import kotlinx.coroutines.delay
 
 class QuizScreenActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,20 +35,89 @@ class QuizScreenActivity : ComponentActivity() {
         setContent {
             FlagQuizTheme {
                 Scaffold { innerPadding ->
-                    val dummyQuestion = FlagQuestion(
-                        id = 1,
-                        flagResId = R.drawable.bhutan,
-                        options = listOf("Nepal", "India", "China", "Bhutan"),
-                        correctAnswer = "Bhutan"
-                    )
 
-                    QuizScreen(
-                        innerPadding = innerPadding,
-                        question = dummyQuestion,
-                        onQuitQuiz = {
-                            finish()
+
+                    val allQuestions = remember {
+                        listOf(
+                            FlagQuestion(
+                                id = 1,
+                                flagResId = R.drawable.bhutan,
+                                options = listOf("Nepal", "India", "China", "Bhutan"),
+                                correctAnswer = "Bhutan"
+                            ),
+                            FlagQuestion(
+                                id = 2,
+                                flagResId = R.drawable.nepal,
+                                options = listOf("Japan", "Nepal", "Korea", "Vietnam"),
+                                correctAnswer = "Nepal"
+                            ),
+                            FlagQuestion(
+                                id = 3,
+                                flagResId = R.drawable.france,
+                                options = listOf("China", "Germany", "Colombia", "Nepal"),
+                                correctAnswer = "France"
+                            ),
+                            FlagQuestion(
+                                id = 3,
+                                flagResId = R.drawable.germany,
+                                options = listOf("Spain", "Germany", "Sri Lanka", "Nepal"),
+                                correctAnswer = "Germany"
+                            ),
+                            FlagQuestion(
+                                id = 3,
+                                flagResId = R.drawable.italy,
+                                options = listOf("Pakistan", "Bangladesh", "Sri Lanka", "Italy"),
+                                correctAnswer = "Italy"
+                            ),
+                            FlagQuestion(
+                                id = 3,
+                                flagResId = R.drawable.spain,
+                                options = listOf("Spain", "Bangladesh", "Sri Lanka", "India"),
+                                correctAnswer = "Spain"
+                            )
+
+                        )
+                    }
+
+
+                    var currentQuestionIndex by remember { mutableStateOf(0) }
+
+
+                    val currentQuestion = allQuestions.getOrNull(currentQuestionIndex)
+
+                    if (currentQuestion != null) {
+                        QuizScreen(
+                            innerPadding = innerPadding,
+                            question = currentQuestion,
+                            onAnswerSelected = { selectedAnswer ->
+                            },
+                            onNextQuestion = {
+
+                                if (currentQuestionIndex < allQuestions.size - 1) {
+                                    currentQuestionIndex++
+                                } else {
+
+                                    Toast.makeText(this, "Quiz Finished!", Toast.LENGTH_LONG).show()
+                                    finish()
+                                }
+                            },
+                            onQuitQuiz = {
+                                finish()
+                            }
+                        )
+                    } else {
+
+                        Column(
+                            modifier = Modifier.fillMaxSize(),
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text("Quiz Finished!")
+                            Button(onClick = { finish() }) {
+                                Text("Exit")
+                            }
                         }
-                    )
+                    }
                 }
             }
         }
@@ -58,6 +128,8 @@ class QuizScreenActivity : ComponentActivity() {
 fun QuizScreen(
     innerPadding: PaddingValues,
     question: FlagQuestion,
+    onAnswerSelected: (String) -> Unit,
+    onNextQuestion: () -> Unit,
     onQuitQuiz: () -> Unit
 ) {
     var selectedOption by remember { mutableStateOf<String?>(null) }
@@ -66,6 +138,18 @@ fun QuizScreen(
     var hintUsed by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
+
+    LaunchedEffect(answerSubmitted, question.id) {
+        if (answerSubmitted) {
+            delay(7000)
+            onNextQuestion()
+            selectedOption = null
+            answerSubmitted = false
+            isCorrectAnswer = null
+            hintUsed = false
+        }
+    }
+
 
     Box(
         modifier = Modifier
@@ -94,6 +178,7 @@ fun QuizScreen(
                 modifier = Modifier.padding(bottom = 24.dp)
             )
 
+
             Image(
                 painter = painterResource(id = question.flagResId),
                 contentDescription = "Flag",
@@ -114,10 +199,23 @@ fun QuizScreen(
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 question.options.forEach { option ->
-                    val backgroundColor = when {
-                        answerSubmitted && option == question.correctAnswer -> Color(0xFF00C853)
-                        answerSubmitted && option == selectedOption && option != question.correctAnswer -> Color(0xFFD50000)
-                        else -> Color.White
+                    val isOptionSelected = selectedOption == option
+
+
+                    val backgroundColor = remember(answerSubmitted, selectedOption, option, question.correctAnswer) {
+                        when {
+                            answerSubmitted -> {
+                                when {
+                                    option == question.correctAnswer -> Color(0xFF00C853)
+                                    isOptionSelected && option != question.correctAnswer -> Color(0xFFD50000)
+
+                                    else -> Color.White
+                                }
+                            }
+
+                            isOptionSelected -> Color(0xFFF97B57).copy(alpha = 0.7f)
+                            else -> Color.White
+                        }
                     }
 
                     Button(
@@ -132,6 +230,8 @@ fun QuizScreen(
                                     if (isCorrectAnswer == true) "Correct!" else "Wrong! The answer was ${question.correctAnswer}",
                                     Toast.LENGTH_SHORT
                                 ).show()
+
+                                onAnswerSelected(option)
                             }
                         },
                         modifier = Modifier
@@ -142,6 +242,7 @@ fun QuizScreen(
                             contentColor = Color.Black
                         ),
                         shape = RoundedCornerShape(12.dp),
+                        elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp),
                         enabled = !answerSubmitted
                     ) {
                         Text(
@@ -156,10 +257,12 @@ fun QuizScreen(
 
             Spacer(modifier = Modifier.height(32.dp))
 
+
             Button(
                 onClick = {
                     hintUsed = true
                     Toast.makeText(context, "Hint: Consider the colors and symbols!", Toast.LENGTH_LONG).show()
+                    // TODO: Implement more specific hint logic here (e.g., remove one wrong option)
                 },
                 modifier = Modifier
                     .fillMaxWidth(0.6f)
@@ -172,7 +275,7 @@ fun QuizScreen(
             }
 
             Spacer(modifier = Modifier.height(24.dp))
-
+            
             TextButton(
                 onClick = onQuitQuiz,
                 modifier = Modifier.align(Alignment.End)
@@ -183,12 +286,6 @@ fun QuizScreen(
     }
 }
 
-data class FlagQuestion(
-    val id: Int,
-    val flagResId: Int,
-    val options: List<String>,
-    val correctAnswer: String
-)
 
 @Preview(showBackground = true)
 @Composable
@@ -202,6 +299,8 @@ fun QuizScreenPreview() {
                 options = listOf("Nepal", "India", "China", "Bhutan"),
                 correctAnswer = "Bhutan"
             ),
+            onAnswerSelected = {},
+            onNextQuestion = {},
             onQuitQuiz = {}
         )
     }
