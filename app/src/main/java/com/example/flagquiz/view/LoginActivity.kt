@@ -1,4 +1,4 @@
-package com.example.flagquiz
+package com.example.flagquiz.view
 
 import android.app.Activity
 import android.content.Context
@@ -33,6 +33,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.flagquiz.R
 import com.example.flagquiz.ui.theme.FlagQuizTheme
 
 class LoginActivity : ComponentActivity() {
@@ -155,7 +156,7 @@ fun LoginBody() {
                     if (email == storedEmail && password == storedPassword) {
                         Toast.makeText(context, "Login Successful", Toast.LENGTH_SHORT).show()
 
-                        val intent = Intent(context, DashboardActivity::class.java)
+                        val intent = Intent(context, NavigationActivity::class.java)
                         context.startActivity(intent)
                         (context as? Activity)?.finish()
                     } else {

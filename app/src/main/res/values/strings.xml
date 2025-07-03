@@ -7,4 +7,6 @@
     <string name="title_activity_splash">SplashActivity</string>
     <string name="title_activity_welcome">WelcomeActivity</string>
     <string name="title_activity_quiz_screen">QuizScreenActivity</string>
+    <string name="title_activity_result">ResultActivity</string>
+    <string name="title_activity_navigation">NavigationActivity</string>
 </resources>

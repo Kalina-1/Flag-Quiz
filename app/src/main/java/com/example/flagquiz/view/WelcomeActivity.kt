@@ -1,4 +1,4 @@
-package com.example.flagquiz
+package com.example.flagquiz.view
 
 import android.content.Intent
 import android.os.Bundle
@@ -26,6 +26,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.flagquiz.R
 import com.example.flagquiz.ui.theme.FlagQuizTheme
 
 class WelcomeActivity : ComponentActivity() {
