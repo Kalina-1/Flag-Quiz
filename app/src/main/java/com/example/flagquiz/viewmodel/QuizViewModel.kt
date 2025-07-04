@@ -2,8 +2,9 @@ package com.example.flagquiz.viewmodel
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import com.example.flagquiz.R
 import com.example.flagquiz.model.Question
+import com.example.flagquiz.R
+import kotlin.random.Random
 
 class QuizViewModel : ViewModel() {
     // Pool of 30 questions
@@ -202,23 +203,34 @@ class QuizViewModel : ViewModel() {
         )
     )
 
-    // Randomly select 10 questions from the pool of 30
+    // Randomly select 10 questions from the pool
     private val selectedQuestions = allQuestions.shuffled().take(10)
 
-    // Shuffle the options of the selected questions
+    // Shuffle the options for each question
     private val shuffledQuestions = selectedQuestions.map { question ->
-        question.copy(options = question.options.shuffled()) // Shuffle the options for each question
+        question.copy(options = question.options.shuffled()) // Shuffle the options
     }
 
     // Track current question index
     private var currentQuestionIndex = 0
 
-    // Mutable state values
+    // Track score
+    val score = mutableStateOf(0)
+
+    // Mutable state values for quiz
     val timeLeft = mutableStateOf(10)
     val isOptionSelected = mutableStateOf(false)
     val selectedOption = mutableStateOf<String?>(null)
     val progress = mutableStateOf(0f)
-    val showHint = mutableStateOf(false)  // Track if the hint is shown
+
+    // Correctly define showHint as mutableStateOf
+    val showHint = mutableStateOf(false) // To track whether to show the hint button or not
+
+    // Method to reset hint when moving to the next question
+    fun resetHint() {
+        showHint.value = false
+    }
+
 
     // Return the current question
     fun getCurrentQuestion(): Question? {
@@ -227,7 +239,11 @@ class QuizViewModel : ViewModel() {
 
     // Check answer
     fun checkAnswer(selected: String?): Boolean {
-        return selected == getCurrentQuestion()?.correctAnswer
+        val isCorrect = selected == getCurrentQuestion()?.correctAnswer
+        if (isCorrect) {
+            score.value += 1 // Increment score if the answer is correct
+        }
+        return isCorrect
     }
 
     // Move to the next question
@@ -238,9 +254,8 @@ class QuizViewModel : ViewModel() {
             selectedOption.value = null
             timeLeft.value = 10  // Reset the timer to 10 seconds
             progress.value = 0f
-            showHint.value = false // Reset hint state for next question
         } else {
-            // End of quiz logic here
+            // End of quiz, handle the completion
         }
     }
 

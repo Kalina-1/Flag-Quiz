@@ -1,7 +1,6 @@
 package com.example.flagquiz.view
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
@@ -43,7 +42,7 @@ class SignupActivity : ComponentActivity() {
         setContent {
             FlagQuizTheme {
                 Scaffold { innerPadding ->
-                    val sharedPreferences = getSharedPreferences("User", Context.MODE_PRIVATE)
+                    val sharedPreferences = getSharedPreferences("User", MODE_PRIVATE)
                     val context = this
 
                     SignupBody(
@@ -81,7 +80,7 @@ class SignupActivity : ComponentActivity() {
                                 ).show()
 
 
-                                val intent = Intent(context, DashboardActivity::class.java)
+                                val intent = Intent(context, NavigationActivity::class.java)
                                 startActivity(intent)
                                 finish()
                             }
@@ -301,7 +300,7 @@ fun SignupBody(
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.clickable {
                         onLoginClick()
-                        val intent = Intent(context, DashboardActivity::class.java)
+                        val intent = Intent(context, NavigationActivity::class.java)
                         context.startActivity(intent)
                         (context as? Activity)?.finish()
                     }

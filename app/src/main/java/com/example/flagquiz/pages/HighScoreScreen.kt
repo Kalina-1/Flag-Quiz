@@ -7,17 +7,24 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.flagquiz.viewmodel.HighScoresViewModel
 
 @Composable
-fun HighScoresScreen() {
+fun HighScoresScreen(viewModel: HighScoresViewModel) {
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
         Text(text = "High Scores", fontSize = 24.sp)
+
         Spacer(modifier = Modifier.height(20.dp))
-        // Add list or details of high scores
-        Text(text = "User 1: 100 points", fontSize = 18.sp)
+
+        // Display High Scores
+        viewModel.highScores.value.forEach { score ->
+            Text(text = score, fontSize = 18.sp)
+        }
     }
 }

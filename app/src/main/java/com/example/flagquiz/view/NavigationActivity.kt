@@ -9,6 +9,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -21,9 +22,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.flagquiz.pages.HighScoresScreen
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.flagquiz.pages.HomeScreen
+import com.example.flagquiz.pages.LearnFlagScreen
 import com.example.flagquiz.pages.SettingsScreen
+import com.example.flagquiz.viewmodel.MainViewModel
 import com.example.flagquiz.R
 
 class NavigationActivity : ComponentActivity() {
@@ -42,14 +45,16 @@ fun NavigationBody() {
     // Define bottom navigation items
     data class BottomNavItem(val label: String, val icon: ImageVector)
 
+    // Use the vector asset for the Learn Flags icon
     val bottomNavItems = listOf(
         BottomNavItem("Home", Icons.Filled.Home),
-//        BottomNavItem("Quiz", Icons.Filled.Quiz),
-//        BottomNavItem("High Scores", Icons.Filled.Scores),
-        BottomNavItem("Settings", Icons.Filled.Settings)  // Ensure 'Settings' is included
+        BottomNavItem("Learn Flags", Icons.Filled.Info), // Use the vector icon from the material icons
+        BottomNavItem("Settings", Icons.Filled.Settings)  // Use the vector icon from the material icons
     )
 
     var selectedIndex by remember { mutableStateOf(0) }
+
+    val viewModel: MainViewModel = viewModel() // Initialize the viewModel here
 
     Scaffold(
         bottomBar = {
@@ -58,11 +63,17 @@ fun NavigationBody() {
             ) {
                 bottomNavItems.forEachIndexed { index, item ->
                     NavigationBarItem(
-                        icon = { Icon(item.icon, contentDescription = item.label) },
+                        icon = {
+                            if (index == 1) {  // Learn Flags screen
+                                Icon(item.icon, contentDescription = "Learn Flags")
+                            } else {
+                                Icon(item.icon, contentDescription = item.label)
+                            }
+                        },
                         label = { Text(item.label) },
                         selected = selectedIndex == index,
                         onClick = {
-                            selectedIndex = index // Update the selected index when an item is clicked
+                            selectedIndex = index  // Update the selected index when an item is clicked
                         }
                     )
                 }
@@ -105,9 +116,8 @@ fun NavigationBody() {
                 // Switch screens based on selected index
                 when (selectedIndex) {
                     0 -> HomeScreen() // Dashboard or home screen
-//                    1 -> QuizScreen() // Current quiz screen
-//                    2 -> HighScoresScreen() // High scores screen
-                    1 -> SettingsScreen() // Settings screen
+                    1 -> LearnFlagScreen(viewModel) // Learn Flag Screen
+                    2 -> SettingsScreen() // Settings screen
                 }
             }
         }

@@ -1,6 +1,5 @@
 package com.example.flagquiz.repository
 
-import com.example.flagquiz.repository.QuestionRepository
 import com.example.flagquiz.R
 import com.example.flagquiz.model.Question
 

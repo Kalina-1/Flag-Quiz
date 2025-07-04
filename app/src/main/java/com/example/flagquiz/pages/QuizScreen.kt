@@ -17,8 +17,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.flagquiz.viewmodel.QuizViewModel
 import com.example.flagquiz.ui.theme.FlagQuizTheme
+import com.example.flagquiz.viewmodel.QuizViewModel
 import com.example.flagquiz.R
 
 @Composable
@@ -30,8 +30,8 @@ fun QuizScreen() {
     val currentQuestion = quizViewModel.getCurrentQuestion()
     val timeLeft = quizViewModel.timeLeft.value
     val isOptionSelected = quizViewModel.isOptionSelected.value
-    // val selectedOption = quizViewModel.selectedOption.value // Removed: Variable 'selectedOption' is never used
-    // val progress = quizViewModel.progress.value // Removed: Variable 'progress' is never used
+    val progress = quizViewModel.progress.value
+    val showHint = quizViewModel.showHint.value
 
     // State to manage feedback visibility
     val showFeedback = remember { mutableStateOf(false) }
@@ -66,16 +66,17 @@ fun QuizScreen() {
     LaunchedEffect(isOptionSelected) {
         if (isOptionSelected) {
             // Delay for 2 seconds before moving to the next question
-            kotlinx.coroutines.delay(2000) // 2 seconds delay
-            quizViewModel.nextQuestion()  // Move to the next question after 2 seconds
+            kotlinx.coroutines.delay(2000)
+            showFeedback.value = false
+            quizViewModel.nextQuestion()  // Move to the next question
         }
     }
 
-    // Layout for displaying the quiz question with updated background color
+    // Layout for displaying the quiz question
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFFFCC99).copy(alpha = 0.8f)) // Set the background color with alpha
+            .background(Color(0xFFFFCC99).copy(alpha = 0.8f))
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
@@ -90,7 +91,7 @@ fun QuizScreen() {
 
         // Progress Bar (timer visualized)
         LinearProgressIndicator(
-            progress = { quizViewModel.progress.value }, // Corrected: Use lambda for progress
+            progress = quizViewModel.progress.value,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(20.dp)
@@ -99,8 +100,8 @@ fun QuizScreen() {
             trackColor = Color.Gray
         )
 
-        // Display Flag Image
         currentQuestion?.let { question ->
+            // Display Flag Image
             Image(
                 painter = painterResource(id = question.flagImage),
                 contentDescription = "Flag",
@@ -137,9 +138,38 @@ fun QuizScreen() {
                         containerColor = Color.White // Option buttons color set to white
                     )
                 ) {
-                    Text(text = option, color = Color.Black) // Text color for option buttons set to black
+                    Text(text = option, color = Color.Black)
                 }
             }
+        }
+
+        // Display Hint Button only if no option has been selected
+        if (!isOptionSelected && !showHint) {
+            Button(
+                onClick = {
+                    quizViewModel.showHint.value = true // Show the hint when clicked
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 20.dp),
+                enabled = !isOptionSelected, // Disable hint button if option is selected
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFFF97B57) // Hint button color
+                )
+            ) {
+                Text("Show Hint: Capital City", color = Color.White)
+            }
+        }
+
+        // Display the capital city hint if it's available
+        if (showHint && currentQuestion != null) {
+            Text(
+                text = "Capital: ${currentQuestion.capitalHint}",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.Blue,
+                modifier = Modifier.padding(top = 20.dp)
+            )
         }
 
         // Display Feedback (Correct or Incorrect)
@@ -153,20 +183,8 @@ fun QuizScreen() {
             )
         }
 
-        // Display Finish Button if it's the last question
-        if (quizViewModel.isLastQuestion()) {
-            Button(
-                onClick = {
-                    // End the quiz here or navigate to a results screen
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 20.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF97B57)) // Finish button color
-            ) {
-                Text("Finish", color = Color.White)
-            }
-        } else if (isOptionSelected) {
+        // Next Question Button after selection
+        if (isOptionSelected) {
             Button(
                 onClick = { quizViewModel.nextQuestion() },
                 modifier = Modifier
@@ -177,7 +195,6 @@ fun QuizScreen() {
                 Text("Next Question", color = Color.White)
             }
         }
-
     }
 }
 
@@ -188,3 +205,5 @@ fun PreviewQuizScreen() {
         QuizScreen()
     }
 }
+
+
