@@ -1,5 +1,6 @@
 package com.example.flagquiz.view
 
+
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -35,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.flagquiz.R
 import com.example.flagquiz.ui.theme.FlagQuizTheme
+import kotlin.jvm.java
 
 class LoginActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -125,7 +127,7 @@ fun LoginBody() {
                     )
                 },
                 visualTransformation = if (showPassword) VisualTransformation.None
-                                       else PasswordVisualTransformation(),
+                else PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                 shape = RoundedCornerShape(8.dp),
                 modifier = Modifier.fillMaxWidth()
@@ -156,9 +158,10 @@ fun LoginBody() {
                     if (email == storedEmail && password == storedPassword) {
                         Toast.makeText(context, "Login Successful", Toast.LENGTH_SHORT).show()
 
+                        // After successful login, navigate to NavigationActivity
                         val intent = Intent(context, NavigationActivity::class.java)
                         context.startActivity(intent)
-                        (context as? Activity)?.finish()
+                        (context as? Activity)?.finish() // Close LoginActivity
                     } else {
                         Toast.makeText(context, "Invalid credentials", Toast.LENGTH_SHORT).show()
                     }

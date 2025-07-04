@@ -78,7 +78,7 @@ fun WelcomeBody(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(0.3f),
+                .weight(0.2f),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceEvenly
         ) {
@@ -86,14 +86,14 @@ fun WelcomeBody(
                 text = "Welcome to the Flag Quiz!",
                 fontFamily = FontFamily.Cursive,
                 fontWeight = FontWeight.Bold,
-                fontSize = 35.sp,
+                fontSize = 36.sp,
                 color = Color.Black,
                 textAlign = TextAlign.Center
             )
             Text(
                 text = "(Dive into the fascinating world of flags!)",
                 fontFamily = FontFamily.Cursive,
-                fontSize = 20.sp,
+                fontSize = 23.sp,
                 color = Color.Black,
                 textAlign = TextAlign.Center
             )

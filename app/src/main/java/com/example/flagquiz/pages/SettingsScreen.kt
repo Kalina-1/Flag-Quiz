@@ -79,12 +79,13 @@ fun SettingsScreen() {
                 .fillMaxWidth(0.8f)
                 .height(70.dp)  // Increased height for better interaction
                 .padding(vertical = 20.dp) // Added more padding to make button stand out
-                .background(Color(0xFFF97B57)) // Strong color contrast
+                .background(Color(0xFFF97B57)) // Changed to the desired orange color
                 .border(2.dp, Color(0xFFB25935), RoundedCornerShape(8.dp)), // Added border to the button
             shape = RoundedCornerShape(8.dp)
         ) {
             Text("Log Out", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 18.sp)
         }
+
 
 
     }
