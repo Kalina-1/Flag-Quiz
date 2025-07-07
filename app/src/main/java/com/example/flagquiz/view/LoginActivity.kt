@@ -24,7 +24,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale // Import ContentScale
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -66,7 +66,7 @@ fun LoginBody() {
     ) {
 
         Image(
-            painter = painterResource(R.drawable.flags),
+            painter = painterResource(R.drawable.flags), // This is your background flag image
             contentDescription = null,
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop
@@ -89,7 +89,7 @@ fun LoginBody() {
                     modifier = Modifier.weight(1f),
                     shape = RoundedCornerShape(8.dp)
                 ) {
-                    Text("Register", color = Color.Black)
+                    Text("Sign-up", color = Color.Black)
                 }
                 Button(
                     onClick = {  },
@@ -101,6 +101,15 @@ fun LoginBody() {
                 }
             }
             Spacer(modifier = Modifier.height(32.dp))
+
+//            Image(
+//                painter = painterResource(id = R.drawable.boywithglobe),
+//                contentDescription = "Boy holding globe with flags",
+//                modifier = Modifier
+//                    .size(150.dp)
+//                    .padding(bottom = 12.dp)
+//            )
+
             OutlinedTextField(
                 value = email,
                 onValueChange = { email = it },
@@ -181,36 +190,9 @@ fun LoginBody() {
                 Text("Or", color = Color.Gray, fontSize = 12.sp)
                 Divider(modifier = Modifier.weight(1f), color = Color.LightGray, thickness = 1.dp)
             }
-            Spacer(modifier = Modifier.height(24.dp))
-            Button(
-                onClick = {  },
-                modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF97B57), contentColor = Color.Black),
-                border = BorderStroke(1.dp, Color.LightGray)
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text("Continue with Apple")
-                }
-            }
-            Spacer(modifier = Modifier.height(12.dp))
-            Button(
-                onClick = {
-
-                },
-                modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF97B57), contentColor = Color.Black),
-                shape = RoundedCornerShape(8.dp),
-                border = BorderStroke(1.dp, Color.LightGray)
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(painter = painterResource(id = android.R.drawable.ic_dialog_email),
-                        contentDescription = "Google Icon", tint = Color.Black)
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text("Continue with Google")
-                }
-            }
-            Spacer(modifier = Modifier.height(24.dp))
+            // Removed "Continue with Apple" button
+            // Removed "Continue with Google" button
+            Spacer(modifier = Modifier.height(24.dp)) // This spacer might need adjustment or removal depending on desired spacing
             Row(
                 horizontalArrangement = Arrangement.Center
             ) {
