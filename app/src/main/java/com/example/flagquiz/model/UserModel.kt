@@ -1,3 +1,4 @@
+
 package com.example.flagquiz.model
 
 data class UserModel(

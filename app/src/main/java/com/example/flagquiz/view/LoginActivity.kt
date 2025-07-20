@@ -13,7 +13,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -36,7 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.flagquiz.R
 import com.example.flagquiz.ui.theme.FlagQuizTheme
-import kotlin.jvm.java
+// REMOVED: import kotlin.jvm.java // This import is generally not needed and can be removed
 
 class LoginActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -80,27 +79,31 @@ fun LoginBody() {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Spacer(modifier = Modifier.height(60.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                OutlinedButton(
-                    onClick = {  },
-                    modifier = Modifier.weight(1f),
-                    shape = RoundedCornerShape(8.dp)
-                ) {
-                    Text("Sign-up", color = Color.Black)
-                }
-                Button(
-                    onClick = {  },
-                    modifier = Modifier.weight(1f),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF97B57)),
-                    shape = RoundedCornerShape(8.dp)
-                ) {
-                    Text("Log In", color = Color.White)
-                }
-            }
-            Spacer(modifier = Modifier.height(32.dp))
+
+            // REMOVED: The following Row containing Sign-up and Log In buttons
+            // Row(
+            //     modifier = Modifier.fillMaxWidth(),
+            //     horizontalArrangement = Arrangement.spacedBy(8.dp)
+            // ) {
+            //     OutlinedButton(
+            //         onClick = {  },
+            //         modifier = Modifier.weight(1f),
+            //         shape = RoundedCornerShape(8.dp)
+            //     ) {
+            //         Text("Sign-up", color = Color.Black)
+            //     }
+            //     Button(
+            //         onClick = {  },
+            //         modifier = Modifier.weight(1f),
+            //         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF97B57)),
+            //         shape = RoundedCornerShape(8.dp)
+            //     ) {
+            //         Text("Log In", color = Color.White)
+            //     }
+            // }
+
+            // Adjusted the Spacer height as the row above it is removed
+            Spacer(modifier = Modifier.height(32.dp)) // This was originally below the removed row. Keep it here for now.
 
 //            Image(
 //                painter = painterResource(id = R.drawable.boywithglobe),
@@ -192,7 +195,7 @@ fun LoginBody() {
             }
             // Removed "Continue with Apple" button
             // Removed "Continue with Google" button
-            Spacer(modifier = Modifier.height(24.dp)) // This spacer might need adjustment or removal depending on desired spacing
+            Spacer(modifier = Modifier.height(24.dp))
             Row(
                 horizontalArrangement = Arrangement.Center
             ) {

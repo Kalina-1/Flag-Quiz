@@ -1,3 +1,4 @@
+
 package com.example.flagquiz.pages
 
 import android.os.CountDownTimer
@@ -205,5 +206,3 @@ fun PreviewQuizScreen() {
         QuizScreen()
     }
 }
-
-

@@ -136,29 +136,31 @@ fun SignupBody(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Spacer(modifier = Modifier.height(50.dp))
-            Spacer(modifier = Modifier.height(24.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Button(
-                    onClick = { },
-                    modifier = Modifier.weight(1f),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF97B57)),
-                    shape = RoundedCornerShape(8.dp),
-                    enabled = false
-                ) {
-                    Text("Signup", color = Color.Black)
-                }
-                OutlinedButton(
-                    onClick = onLoginClick,
-                    modifier = Modifier.weight(1f),
-                    shape = RoundedCornerShape(8.dp),
-                ) {
-                    Text("Log In", color = Color.Black)
-                }
-            }
-            Spacer(modifier = Modifier.height(24.dp))
+            // REMOVED: The following Row containing Signup and Log In buttons
+            // Spacer(modifier = Modifier.height(24.dp)) // This spacer was above the row
+            // Row(
+            //     modifier = Modifier.fillMaxWidth(),
+            //     horizontalArrangement = Arrangement.spacedBy(8.dp)
+            // ) {
+            //     Button(
+            //         onClick = { },
+            //         modifier = Modifier.weight(1f),
+            //         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF97B57)),
+            //         shape = RoundedCornerShape(8.dp),
+            //         enabled = false
+            //     ) {
+            //         Text("Signup", color = Color.Black)
+            //     }
+            //     OutlinedButton(
+            //         onClick = onLoginClick,
+            //         modifier = Modifier.weight(1f),
+            //         shape = RoundedCornerShape(8.dp),
+            //     ) {
+            //         Text("Log In", color = Color.Black)
+            //     }
+            // }
+            Spacer(modifier = Modifier.height(24.dp)) // Kept this spacer, assuming you want a gap here. You might adjust this.
+
             OutlinedTextField(
                 value = fullName,
                 onValueChange = { fullName = it },
@@ -300,9 +302,7 @@ fun SignupBody(
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.clickable {
                         onLoginClick()
-                        val intent = Intent(context, NavigationActivity::class.java)
-                        context.startActivity(intent)
-                        (context as? Activity)?.finish()
+                        // Removed the extra intent and finish calls here as onLoginClick already handles navigation
                     }
                 )
             }

@@ -1,16 +1,9 @@
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
+// Flag-Quiz/build.gradle.kts
 plugins {
-    alias(libs.plugins.android.application) apply false
-    alias(libs.plugins.kotlin.android) apply false
-    alias(libs.plugins.kotlin.compose) apply false
-//    id("org.jetbrains.kotlin.plugin.compose") version "X.Y.Z"
+    // ... other plugins you might have (e.g., from Android Studio template)
+    id("com.android.application") version "8.2.0" apply false // Example version, yours might differ
+    id("org.jetbrains.kotlin.android") version "1.9.0" apply false // Example version, yours might differ
+
+    id("com.google.gms.google-services") version "4.4.2" apply false // Use the latest version from Firebase docs
 }
 
-
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
-//plugins {
-//    alias(libs.plugins.android.application) apply false
-//    alias(libs.plugins.kotlin.android) apply false
-//    alias(libs.plugins.kotlin.compose) apply false
-////    id("com.google.gms.google-services") version "4.4.2" apply false
-//}
