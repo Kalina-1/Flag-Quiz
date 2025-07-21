@@ -1,8 +1,8 @@
-
 package com.example.flagquiz.view
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -33,11 +33,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.flagquiz.R
 import com.example.flagquiz.ui.theme.FlagQuizTheme
+import com.google.firebase.FirebaseApp
 import kotlinx.coroutines.delay
 
 class SplashActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val firebaseApps = FirebaseApp.getApps(this)
+        Log.d("FirebaseCheck", "Firebase initialized: ${firebaseApps.isNotEmpty()}")
+
         enableEdgeToEdge()
         setContent {
             FlagQuizTheme {
@@ -47,17 +52,14 @@ class SplashActivity : ComponentActivity() {
     }
 }
 
-
 @Composable
 fun SplashBody() {
     val context = LocalContext.current
 
     LaunchedEffect(Unit) {
         delay(2000)
-
         val intent = Intent(context, WelcomeActivity::class.java)
         context.startActivity(intent)
-
         (context as? ComponentActivity)?.finish()
     }
 
@@ -81,22 +83,19 @@ fun SplashBody() {
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-
                 Text(
                     text = "Flag Quiz",
                     color = Color.White,
                     fontSize = 70.sp,
                     fontFamily = FontFamily.Cursive,
-                    fontWeight = FontWeight.Bold,
+                    fontWeight = FontWeight.Bold
                 )
-
                 Spacer(modifier = Modifier.height(30.dp))
                 CircularProgressIndicator(color = Color.White)
             }
         }
     }
 }
-
 
 @Preview
 @Composable

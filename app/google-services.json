@@ -1,14 +1,14 @@
 {
   "project_info": {
-    "project_number": "138071694847",
-    "firebase_url": "https://flag-quiz-71524-default-rtdb.firebaseio.com",
-    "project_id": "flag-quiz-71524",
-    "storage_bucket": "flag-quiz-71524.firebasestorage.app"
+    "project_number": "721557721186",
+    "firebase_url": "https://flag-quiz-605b3-default-rtdb.firebaseio.com",
+    "project_id": "flag-quiz-605b3",
+    "storage_bucket": "flag-quiz-605b3.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:138071694847:android:f03996f1b5921cabe21bca",
+        "mobilesdk_app_id": "1:721557721186:android:3fe5119d9416471db8013b",
         "android_client_info": {
           "package_name": "com.example.flagquiz"
         }
@@ -16,7 +16,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyB1Z-zqdrQhNgilHfSMNfyyMUWhDG796qU"
+          "current_key": "AIzaSyDRj5Sd934ZGXq7iW_B6FBtDjtZxWJPweE"
         }
       ],
       "services": {

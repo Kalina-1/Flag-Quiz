@@ -1,99 +1,66 @@
-
 package com.example.flagquiz.viewmodel
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.flagquiz.model.UserModel
+import androidx.lifecycle.viewModelScope
+import com.example.flagquiz.model.User // Corrected: Import 'User' instead of 'UserModel'
 import com.example.flagquiz.repository.UserRepository
-//import com.google.firebase.auth.FirebaseUser
+import kotlinx.coroutines.launch
 
-class UserViewModel(val repo: UserRepository) : ViewModel(){
+class UserViewModel(private val repo: UserRepository) : ViewModel() {
 
-    // LiveData for login status
     private val _loginStatus = MutableLiveData<Pair<Boolean, String>>()
-    val loginStatus: LiveData<Pair<Boolean, String>> get() = _loginStatus
+    val loginStatus: LiveData<Pair<Boolean, String>> = _loginStatus
 
-    fun login(
-        email: String,
-        password: String
-    ){
-        repo.login(email, password) { success, message ->
-            _loginStatus.postValue(Pair(success, message))
-        }
-    }
+    private val _registerStatus = MutableLiveData<Triple<Boolean, String, User?>>()
+    val registerStatus: LiveData<Triple<Boolean, String, User?>> = _registerStatus
 
-    // Registration function
-    private val _registerStatus = MutableLiveData<Triple<Boolean, String, String>>()
-    val registerStatus: LiveData<Triple<Boolean, String, String>> get() = _registerStatus
-
-    fun register(
-        email: String, password: String,
-        callback: (Boolean, String, String) -> Unit
-    ){
-        repo.register(email, password) { success, message, data ->
-            _registerStatus.postValue(Triple(success, message, data))
-        }
-    }
-
-    // Add User to database
-    fun addUserToDatabase(
-        userId: String, model: UserModel,
-        callback: (Boolean, String) -> Unit
-    ){
-        repo.addUserToDatabase(userId, model, callback)
-    }
-
-    // Forget password
-    private val _passwordResetStatus = MutableLiveData<Pair<Boolean, String>>()
-    val passwordResetStatus: LiveData<Pair<Boolean, String>> get() = _passwordResetStatus
-
-    fun forgetPassword(
-        email: String
-    ){
-        repo.forgetPassword(email) { success, message ->
-            _passwordResetStatus.postValue(Pair(success, message))
-        }
-    }
-
-    // Delete Account
-    fun deleteAccount(
-        userId: String,
-        callback: (Boolean, String) -> Unit
-    ){
-        repo.deleteAccount(userId, callback)
-    }
-
-    // Edit Profile
-    fun editProfile(
-        userId: String, data: MutableMap<String, Any>,
-        callback: (Boolean, String) -> Unit
-    ){
-        repo.editProfile(userId, data, callback)
-    }
-
-    // Get Current User
-//    fun getCurrentUser(): FirebaseUser?{
-//        return repo.getCurrentUser()
-//    }
-
-    // Get User by ID
-    private val _users = MutableLiveData<UserModel?>()
-    val users : LiveData<UserModel?> get() = _users
-
-    fun getUserById(userId: String){
-        repo.getUserById(userId) { success, message, data ->
-            if (success) {
-                _users.postValue(data)
-            } else {
-                _users.postValue(null)
+    fun login(email: String, password: String) {
+        viewModelScope.launch {
+            val result = repo.signIn(email, password) // This calls the signIn in UserRepository
+            result.onSuccess { firebaseUser ->
+                firebaseUser?.uid?.let { uid ->
+                    val userDetailsResult = repo.getUser(uid)
+                    userDetailsResult.onSuccess { user ->
+                        _loginStatus.postValue(Pair(true, "Login Successful!"))
+                    }.onFailure { exception ->
+                        _loginStatus.postValue(Pair(false, exception.message ?: "Login successful but user data not found."))
+                    }
+                } ?: run {
+                    _loginStatus.postValue(Pair(false, "Login failed: No user found."))
+                }
+            }.onFailure { exception ->
+                _loginStatus.postValue(Pair(false, exception.message ?: "Login failed"))
             }
         }
     }
 
-    // Logout
-    fun logout(callback: (Boolean, String) -> Unit){
-        repo.logout(callback)
+    fun register(fullName: String, email: String, country: String, password: String) {
+        viewModelScope.launch {
+            val result = repo.signUp(email, password) // This calls the signUp in UserRepository
+            result.onSuccess { firebaseUser ->
+                firebaseUser?.let { user ->
+                    val newUser = User(
+                        uid = user.uid,
+                        username = fullName,
+                        email = email,
+                        firstName = fullName.split(" ").firstOrNull(),
+                        lastName = fullName.split(" ").drop(1).joinToString(" "),
+                        address = country
+                    )
+                    val saveResult = repo.saveUser(newUser) // This calls saveUser in UserRepository
+                    saveResult.onSuccess {
+                        _registerStatus.postValue(Triple(true, "Registration Successful and data saved!", newUser))
+                    }.onFailure { exception ->
+                        _registerStatus.postValue(Triple(false, exception.message ?: "Failed to save user data", null))
+                    }
+                } ?: run {
+                    _registerStatus.postValue(Triple(false, "Registration failed: No user created.", null))
+                }
+            }.onFailure { exception ->
+                _registerStatus.postValue(Triple(false, exception.message ?: "Registration failed", null))
+            }
+        }
     }
-
 }

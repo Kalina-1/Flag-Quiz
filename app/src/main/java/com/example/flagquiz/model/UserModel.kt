@@ -1,10 +1,10 @@
-
 package com.example.flagquiz.model
 
-data class UserModel(
-    var userId : String = "",
-    var firstName : String = "",
-    var lastName : String = "",
-    var address : String = "",
-    var email : String = "",
+data class User(
+    var uid: String? = null,
+    var username: String? = null,
+    var email: String? = null,
+    var firstName: String? = null,
+    var lastName: String? = null,
+    var address: String? = null
 )

@@ -1,6 +1,5 @@
 package com.example.flagquiz.view
 
-
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -35,23 +34,32 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.flagquiz.R
 import com.example.flagquiz.ui.theme.FlagQuizTheme
-// REMOVED: import kotlin.jvm.java // This import is generally not needed and can be removed
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
+import com.example.flagquiz.model.User
 
 class LoginActivity : ComponentActivity() {
+
+    private lateinit var auth: FirebaseAuth
+    private lateinit var database: FirebaseDatabase
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        auth = FirebaseAuth.getInstance()
+        database = FirebaseDatabase.getInstance()
+
         setContent {
             FlagQuizTheme {
-                LoginBody()
+                LoginBody(auth, database)
             }
         }
     }
-
 }
 
 @Composable
-fun LoginBody() {
+fun LoginBody(auth: FirebaseAuth, database: FirebaseDatabase) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var showPassword by remember { mutableStateOf(false) }
@@ -63,9 +71,8 @@ fun LoginBody() {
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
-
         Image(
-            painter = painterResource(R.drawable.flags), // This is your background flag image
+            painter = painterResource(R.drawable.flags),
             contentDescription = null,
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop
@@ -79,39 +86,7 @@ fun LoginBody() {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Spacer(modifier = Modifier.height(60.dp))
-
-            // REMOVED: The following Row containing Sign-up and Log In buttons
-            // Row(
-            //     modifier = Modifier.fillMaxWidth(),
-            //     horizontalArrangement = Arrangement.spacedBy(8.dp)
-            // ) {
-            //     OutlinedButton(
-            //         onClick = {  },
-            //         modifier = Modifier.weight(1f),
-            //         shape = RoundedCornerShape(8.dp)
-            //     ) {
-            //         Text("Sign-up", color = Color.Black)
-            //     }
-            //     Button(
-            //         onClick = {  },
-            //         modifier = Modifier.weight(1f),
-            //         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF97B57)),
-            //         shape = RoundedCornerShape(8.dp)
-            //     ) {
-            //         Text("Log In", color = Color.White)
-            //     }
-            // }
-
-            // Adjusted the Spacer height as the row above it is removed
-            Spacer(modifier = Modifier.height(32.dp)) // This was originally below the removed row. Keep it here for now.
-
-//            Image(
-//                painter = painterResource(id = R.drawable.boywithglobe),
-//                contentDescription = "Boy holding globe with flags",
-//                modifier = Modifier
-//                    .size(150.dp)
-//                    .padding(bottom = 12.dp)
-//            )
+            Spacer(modifier = Modifier.height(32.dp))
 
             OutlinedTextField(
                 value = email,
@@ -122,7 +97,9 @@ fun LoginBody() {
                 shape = RoundedCornerShape(8.dp),
                 modifier = Modifier.fillMaxWidth()
             )
+
             Spacer(modifier = Modifier.height(12.dp))
+
             OutlinedTextField(
                 value = password,
                 onValueChange = { password = it },
@@ -144,7 +121,9 @@ fun LoginBody() {
                 shape = RoundedCornerShape(8.dp),
                 modifier = Modifier.fillMaxWidth()
             )
+
             Spacer(modifier = Modifier.height(16.dp))
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
@@ -158,25 +137,68 @@ fun LoginBody() {
                     )
                     Text("Remember Me", fontSize = 12.sp)
                 }
-                TextButton(onClick = {  }) {
+                TextButton(onClick = { }) {
                     Text("Forgot Password?", color = Color(0xFF673AB7), fontSize = 12.sp)
                 }
             }
+
             Spacer(modifier = Modifier.height(24.dp))
+
             Button(
                 onClick = {
-                    val storedEmail = sharedPreferences.getString("email", "")
-                    val storedPassword = sharedPreferences.getString("password", "")
-                    if (email == storedEmail && password == storedPassword) {
-                        Toast.makeText(context, "Login Successful", Toast.LENGTH_SHORT).show()
-
-                        // After successful login, navigate to NavigationActivity
-                        val intent = Intent(context, NavigationActivity::class.java)
-                        context.startActivity(intent)
-                        (context as? Activity)?.finish() // Close LoginActivity
-                    } else {
-                        Toast.makeText(context, "Invalid credentials", Toast.LENGTH_SHORT).show()
-                    }
+                    auth.signInWithEmailAndPassword(email, password)
+                        .addOnCompleteListener(context as Activity) { task ->
+                            if (task.isSuccessful) {
+                                val firebaseUser = auth.currentUser
+                                firebaseUser?.let { user ->
+                                    val userId = user.uid
+                                    database.getReference("users").child(userId).get()
+                                        .addOnSuccessListener { dataSnapshot ->
+                                            val userFromDb = dataSnapshot.getValue(User::class.java)
+                                            if (userFromDb != null) {
+                                                val editor = sharedPreferences.edit()
+                                                editor.putString("uid", userFromDb.uid)
+                                                editor.putString("fullName", userFromDb.username)
+                                                editor.putString("email", userFromDb.email)
+                                                editor.putString("country", userFromDb.address)
+                                                editor.apply()
+                                                Toast.makeText(context, "Login Successful!", Toast.LENGTH_SHORT).show()
+                                                context.startActivity(Intent(context, NavigationActivity::class.java))
+                                                (context as? Activity)?.finish()
+                                            } else {
+                                                val newUser = User(
+                                                    uid = userId,
+                                                    username = "User",
+                                                    email = email,
+                                                    address = "Not Provided"
+                                                )
+                                                database.getReference("users").child(userId).setValue(newUser)
+                                                    .addOnSuccessListener {
+                                                        val editor = sharedPreferences.edit()
+                                                        editor.putString("uid", newUser.uid)
+                                                        editor.putString("fullName", newUser.username)
+                                                        editor.putString("email", newUser.email)
+                                                        editor.putString("country", newUser.address)
+                                                        editor.apply()
+                                                        Toast.makeText(context, "Login Successful!", Toast.LENGTH_SHORT).show()
+                                                        context.startActivity(Intent(context, NavigationActivity::class.java))
+                                                        (context as? Activity)?.finish()
+                                                    }
+                                                    .addOnFailureListener {
+                                                        Toast.makeText(context, "Failed to create user profile: ${it.message}", Toast.LENGTH_SHORT).show()
+                                                        auth.signOut()
+                                                    }
+                                            }
+                                        }
+                                        .addOnFailureListener {
+                                            Toast.makeText(context, "Failed to fetch user data: ${it.message}", Toast.LENGTH_SHORT).show()
+                                            auth.signOut()
+                                        }
+                                }
+                            } else {
+                                Toast.makeText(context, "Authentication failed: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+                            }
+                        }
                 },
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF97B57)),
@@ -184,7 +206,9 @@ fun LoginBody() {
             ) {
                 Text("Log In", color = Color.White)
             }
+
             Spacer(modifier = Modifier.height(24.dp))
+
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
@@ -193,9 +217,9 @@ fun LoginBody() {
                 Text("Or", color = Color.Gray, fontSize = 12.sp)
                 Divider(modifier = Modifier.weight(1f), color = Color.LightGray, thickness = 1.dp)
             }
-            // Removed "Continue with Apple" button
-            // Removed "Continue with Google" button
+
             Spacer(modifier = Modifier.height(24.dp))
+
             Row(
                 horizontalArrangement = Arrangement.Center
             ) {
@@ -220,6 +244,6 @@ fun LoginBody() {
 @Composable
 fun LoginPreview() {
     FlagQuizTheme {
-        LoginBody()
+        LoginBody(FirebaseAuth.getInstance(), FirebaseDatabase.getInstance())
     }
 }

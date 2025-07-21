@@ -34,11 +34,24 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.flagquiz.R
 import com.example.flagquiz.ui.theme.FlagQuizTheme
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
+import com.example.flagquiz.view.NavigationActivity
+import com.example.flagquiz.view.LoginActivity
+import com.example.flagquiz.model.User
 
 class SignupActivity : ComponentActivity() {
+
+    private lateinit var auth: FirebaseAuth
+    private lateinit var database: FirebaseDatabase
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        auth = FirebaseAuth.getInstance()
+        database = FirebaseDatabase.getInstance()
+
         setContent {
             FlagQuizTheme {
                 Scaffold { innerPadding ->
@@ -48,46 +61,77 @@ class SignupActivity : ComponentActivity() {
                     SignupBody(
                         innerPadding = innerPadding,
                         onRegisterAttempt = { fullName, email, country, password, termsAccepted ->
+
+                            // Basic input validation before Firebase call
+                            if (fullName.isBlank()) {
+                                Toast.makeText(context, "Please enter your full name.", Toast.LENGTH_SHORT).show()
+                                return@SignupBody
+                            }
+
+                            if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                                Toast.makeText(context, "Please enter a valid email.", Toast.LENGTH_SHORT).show()
+                                return@SignupBody
+                            }
+
+                            if (password.length < 6) {
+                                Toast.makeText(context, "Password should be at least 6 characters.", Toast.LENGTH_SHORT).show()
+                                return@SignupBody
+                            }
+
                             if (!termsAccepted) {
-                                Toast.makeText(this, "Please accept terms and privacy policy.",
-                                    Toast.LENGTH_SHORT).show()
+                                Toast.makeText(context, "Please accept terms and privacy policy.", Toast.LENGTH_SHORT).show()
                                 return@SignupBody
                             }
+
                             if (country.isBlank() || country == "Select Country") {
-                                Toast.makeText(this, "Please select a country.",
-                                    Toast.LENGTH_SHORT).show()
+                                Toast.makeText(context, "Please select a country.", Toast.LENGTH_SHORT).show()
                                 return@SignupBody
                             }
 
-                            val localEmail: String? = sharedPreferences.getString("email", "")
-                            if (localEmail == email) {
-                                Toast.makeText(
-                                    this,
-                                    "This email is already registered",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            } else {
-                                val editor = sharedPreferences.edit()
-                                editor.putString("fullName", fullName)
-                                editor.putString("email", email)
-                                editor.putString("country", country)
-                                editor.putString("password", password)
-                                editor.apply()
-                                Toast.makeText(
-                                    this,
-                                    "Signup Successful",
-                                    Toast.LENGTH_SHORT
-                                ).show()
+                            // Firebase Authentication signup
+                            auth.createUserWithEmailAndPassword(email, password)
+                                .addOnCompleteListener(this) { task ->
+                                    if (task.isSuccessful) {
+                                        val firebaseUser = auth.currentUser
+                                        firebaseUser?.let { user ->
 
+                                            val nameParts = fullName.trim().split(" ")
 
-                                val intent = Intent(context, NavigationActivity::class.java)
-                                startActivity(intent)
-                                finish()
-                            }
+                                            val newUser = User(
+                                                uid = user.uid,
+                                                username = fullName,
+                                                email = email,
+                                                firstName = nameParts.firstOrNull() ?: "",
+                                                lastName = if (nameParts.size > 1) nameParts.drop(1).joinToString(" ") else "",
+                                                address = country
+                                            )
+
+                                            // Save additional user data in Realtime Database
+                                            database.getReference("users").child(user.uid).setValue(newUser)
+                                                .addOnCompleteListener { dbTask ->
+                                                    if (dbTask.isSuccessful) {
+                                                        val editor = sharedPreferences.edit()
+                                                        editor.putString("fullName", fullName)
+                                                        editor.putString("email", email)
+                                                        editor.putString("country", country)
+                                                        editor.apply()
+
+                                                        Toast.makeText(context, "Signup successful!", Toast.LENGTH_SHORT).show()
+                                                        startActivity(Intent(context, NavigationActivity::class.java))
+                                                        finish()
+                                                    } else {
+                                                        Toast.makeText(context, "Failed to save user data: ${dbTask.exception?.message}", Toast.LENGTH_SHORT).show()
+                                                    }
+                                                }
+                                        }
+                                    } else {
+                                        // Here you can customize error messages based on exception type if needed
+                                        Toast.makeText(context, "Authentication failed: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+                                    }
+                                }
                         },
                         onLoginClick = {
-                            Toast.makeText(this, "Navigate to Login screen", Toast.LENGTH_SHORT).show()
-                            startActivity(Intent(this@SignupActivity, LoginActivity::class.java))
+                            startActivity(Intent(context, LoginActivity::class.java))
                             finish()
                         }
                     )
@@ -131,35 +175,11 @@ fun SignupBody(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 0.dp)
+                .padding(horizontal = 16.dp)
                 .background(Color(0xFFFFCC99).copy(alpha = 0.8f)),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Spacer(modifier = Modifier.height(50.dp))
-            // REMOVED: The following Row containing Signup and Log In buttons
-            // Spacer(modifier = Modifier.height(24.dp)) // This spacer was above the row
-            // Row(
-            //     modifier = Modifier.fillMaxWidth(),
-            //     horizontalArrangement = Arrangement.spacedBy(8.dp)
-            // ) {
-            //     Button(
-            //         onClick = { },
-            //         modifier = Modifier.weight(1f),
-            //         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF97B57)),
-            //         shape = RoundedCornerShape(8.dp),
-            //         enabled = false
-            //     ) {
-            //         Text("Signup", color = Color.Black)
-            //     }
-            //     OutlinedButton(
-            //         onClick = onLoginClick,
-            //         modifier = Modifier.weight(1f),
-            //         shape = RoundedCornerShape(8.dp),
-            //     ) {
-            //         Text("Log In", color = Color.Black)
-            //     }
-            // }
-            Spacer(modifier = Modifier.height(24.dp)) // Kept this spacer, assuming you want a gap here. You might adjust this.
 
             OutlinedTextField(
                 value = fullName,
@@ -238,7 +258,11 @@ fun SignupBody(
                     modifier = Modifier
                         .menuAnchor()
                         .fillMaxWidth(),
-                    shape = RoundedCornerShape(8.dp)
+                    shape = RoundedCornerShape(8.dp),
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        focusedBorderColor = if (selectedCountry == "Select Country") Color.Red else Color.Gray,
+                        unfocusedBorderColor = if (selectedCountry == "Select Country") Color.Red else Color.Gray
+                    )
                 )
                 ExposedDropdownMenu(
                     expanded = expanded,
@@ -267,7 +291,10 @@ fun SignupBody(
                 )
                 Text(
                     "I agree to Terms and Privacy Policy.",
-                    fontSize = 14.sp
+                    fontSize = 14.sp,
+                    modifier = Modifier.clickable {
+                        // Optional: Navigate to terms/privacy policy screen or open URL
+                    }
                 )
             }
             Button(
@@ -302,7 +329,6 @@ fun SignupBody(
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.clickable {
                         onLoginClick()
-                        // Removed the extra intent and finish calls here as onLoginClick already handles navigation
                     }
                 )
             }

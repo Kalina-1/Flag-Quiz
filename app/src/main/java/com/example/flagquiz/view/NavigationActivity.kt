@@ -1,6 +1,7 @@
-
 package com.example.flagquiz.view
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -19,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -29,52 +31,60 @@ import com.example.flagquiz.pages.LearnFlagScreen
 import com.example.flagquiz.pages.SettingsScreen
 import com.example.flagquiz.viewmodel.MainViewModel
 import com.example.flagquiz.R
+import com.google.firebase.auth.FirebaseAuth
 
 class NavigationActivity : ComponentActivity() {
+
+    private lateinit var auth: FirebaseAuth
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        auth = FirebaseAuth.getInstance()
+
+        if (auth.currentUser == null) {
+            val intent = Intent(this, LoginActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
+
         setContent {
-            NavigationBody()
+            NavigationBody(auth)
         }
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NavigationBody() {
-    // Define bottom navigation items
+fun NavigationBody(auth: FirebaseAuth) {
     data class BottomNavItem(val label: String, val icon: ImageVector)
 
-    // Use the vector asset for the Learn Flags icon
     val bottomNavItems = listOf(
         BottomNavItem("Home", Icons.Filled.Home),
-        BottomNavItem("Learn Flags", Icons.Filled.Info), // Use the vector icon from the material icons
-        BottomNavItem("Settings", Icons.Filled.Settings)  // Use the vector icon from the material icons
+        BottomNavItem("Learn Flags", Icons.Filled.Info),
+        BottomNavItem("Settings", Icons.Filled.Settings)
     )
 
     var selectedIndex by remember { mutableStateOf(0) }
 
-    val viewModel: MainViewModel = viewModel() // Initialize the viewModel here
+    val viewModel: MainViewModel = viewModel()
+    val context = LocalContext.current
 
     Scaffold(
         bottomBar = {
             NavigationBar(
-                containerColor = Color(0xFFFFCC99)  // Set the bottom bar color to the desired color
+                containerColor = Color(0xFFFFCC99)
             ) {
                 bottomNavItems.forEachIndexed { index, item ->
                     NavigationBarItem(
                         icon = {
-                            if (index == 1) {  // Learn Flags screen
-                                Icon(item.icon, contentDescription = "Learn Flags")
-                            } else {
-                                Icon(item.icon, contentDescription = item.label)
-                            }
+                            Icon(item.icon, contentDescription = item.label)
                         },
                         label = { Text(item.label) },
                         selected = selectedIndex == index,
                         onClick = {
-                            selectedIndex = index  // Update the selected index when an item is clicked
+                            selectedIndex = index
                         }
                     )
                 }
@@ -97,7 +107,6 @@ fun NavigationBody() {
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            // Background Image
             Image(
                 painter = painterResource(id = R.drawable.flags),
                 contentDescription = null,
@@ -105,20 +114,28 @@ fun NavigationBody() {
                 contentScale = ContentScale.Crop
             )
 
-            // Apply content with semi-transparent background
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(Color(0xFFFFCC99).copy(alpha = 0.8f)) // Semi-transparent background
-                    .padding(horizontal = 16.dp), // Add padding around content
+                    .background(Color(0xFFFFCC99).copy(alpha = 0.8f))
+                    .padding(horizontal = 16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                // Switch screens based on selected index
                 when (selectedIndex) {
-                    0 -> HomeScreen() // Dashboard or home screen
-                    1 -> LearnFlagScreen(viewModel) // Learn Flag Screen
-                    2 -> SettingsScreen() // Settings screen
+                    0 -> HomeScreen()
+                    1 -> LearnFlagScreen(viewModel)
+                    2 -> SettingsScreen(onSignOut = {
+                        auth.signOut()
+                        val sharedPreferences = context.getSharedPreferences("User", Context.MODE_PRIVATE)
+                        val editor = sharedPreferences.edit()
+                        editor.clear()
+                        editor.apply()
+                        val intent = Intent(context, LoginActivity::class.java)
+                        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                        context.startActivity(intent)
+                        (context as? ComponentActivity)?.finish()
+                    })
                 }
             }
         }
