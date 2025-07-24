@@ -22,9 +22,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.flagquiz.pages.HomeScreen
 import com.example.flagquiz.pages.LearnFlagScreen
@@ -43,12 +41,14 @@ class NavigationActivity : ComponentActivity() {
 
         auth = FirebaseAuth.getInstance()
 
+        // If user is not logged in, redirect to login screen
         if (auth.currentUser == null) {
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
-            finish()
+            finish() // Prevent going back to this activity
         }
 
+        // Load the main navigation UI
         setContent {
             NavigationBody(auth)
         }
@@ -58,34 +58,31 @@ class NavigationActivity : ComponentActivity() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NavigationBody(auth: FirebaseAuth) {
+    // Structure to hold nav item label and icon
     data class BottomNavItem(val label: String, val icon: ImageVector)
 
+    // Bottom nav bar items
     val bottomNavItems = listOf(
         BottomNavItem("Home", Icons.Filled.Home),
         BottomNavItem("Learn Flags", Icons.Filled.Info),
         BottomNavItem("Settings", Icons.Filled.Settings)
     )
 
-    var selectedIndex by remember { mutableStateOf(0) }
-
-    val viewModel: MainViewModel = viewModel()
+    var selectedIndex by remember { mutableStateOf(0) } // Keeps track of selected tab
+    val viewModel: MainViewModel = viewModel() // ViewModel for shared state
     val context = LocalContext.current
 
     Scaffold(
         bottomBar = {
             NavigationBar(
-                containerColor = Color(0xFFFFCC99)
+                containerColor = Color(0xFFFFCC99) // Light orange background for nav bar
             ) {
                 bottomNavItems.forEachIndexed { index, item ->
                     NavigationBarItem(
-                        icon = {
-                            Icon(item.icon, contentDescription = item.label)
-                        },
+                        icon = { Icon(item.icon, contentDescription = item.label) },
                         label = { Text(item.label) },
                         selected = selectedIndex == index,
-                        onClick = {
-                            selectedIndex = index
-                        }
+                        onClick = { selectedIndex = index } // Switch between screens
                     )
                 }
             }
@@ -93,12 +90,12 @@ fun NavigationBody(auth: FirebaseAuth) {
         topBar = {
             TopAppBar(
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color(0xFFF97B57),
+                    containerColor = Color(0xFFF97B57), // App bar background
                     navigationIconContentColor = Color.White,
                     titleContentColor = Color.White,
                     actionIconContentColor = Color.White
                 ),
-                title = { Text("Flag Quiz App") }
+                title = { Text("Flag Quiz App") } // Title of app
             )
         }
     ) { innerPadding ->
@@ -107,6 +104,7 @@ fun NavigationBody(auth: FirebaseAuth) {
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
+            // Background image of flags
             Image(
                 painter = painterResource(id = R.drawable.flags),
                 contentDescription = null,
@@ -114,6 +112,7 @@ fun NavigationBody(auth: FirebaseAuth) {
                 contentScale = ContentScale.Crop
             )
 
+            // Semi-transparent layer over image for readability
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -122,20 +121,30 @@ fun NavigationBody(auth: FirebaseAuth) {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
+                // Render screen based on selected index
                 when (selectedIndex) {
                     0 -> HomeScreen()
                     1 -> LearnFlagScreen(viewModel)
-                    2 -> SettingsScreen(onSignOut = {
-                        auth.signOut()
-                        val sharedPreferences = context.getSharedPreferences("User", Context.MODE_PRIVATE)
-                        val editor = sharedPreferences.edit()
-                        editor.clear()
-                        editor.apply()
-                        val intent = Intent(context, LoginActivity::class.java)
-                        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                        context.startActivity(intent)
-                        (context as? ComponentActivity)?.finish()
-                    })
+                    2 -> SettingsScreen(
+                        onSignOut = {
+                            // Sign the user out from Firebase
+                            auth.signOut()
+
+                            // Clear user data from shared preferences
+                            val sharedPreferences = context.getSharedPreferences("User", Context.MODE_PRIVATE)
+                            val editor = sharedPreferences.edit()
+                            editor.clear()
+                            editor.apply()
+
+                            // Navigate back to LoginActivity and clear back stack
+                            val intent = Intent(context, LoginActivity::class.java)
+                            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                            context.startActivity(intent)
+
+                            // Close current activity to prevent back navigation
+                            (context as? ComponentActivity)?.finish()
+                        }
+                    )
                 }
             }
         }
