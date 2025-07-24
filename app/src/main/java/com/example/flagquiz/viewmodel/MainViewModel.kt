@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.example.flagquiz.R
 
+// Simple data class to hold country info: name, capital, and flag image resource
 data class FlagAndCapital(val countryName: String, val capital: String, val flagResourceId: Int)
 
 class MainViewModel : ViewModel() {
