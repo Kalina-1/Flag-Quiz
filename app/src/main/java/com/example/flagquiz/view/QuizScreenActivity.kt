@@ -87,18 +87,19 @@ fun QuizScreen(onFinishClicked: () -> Unit) {
         feedbackColor.value = Color.Red
     }
 
-    // Handle option selection feedback and next question logic
     LaunchedEffect(isOptionSelected) {
         if (isOptionSelected) {
             timer.cancel() // Stop the timer once an option is selected
-            kotlinx.coroutines.delay(2000) // Delay for 2 seconds for feedback
-            showFeedback.value = false // Hide feedback after delay
+            kotlinx.coroutines.delay(2000) // Wait 2 seconds to show feedback
+
+            // Move to next question if not last question, else mark quiz finished
             if (quizViewModel.isLastQuestion()) {
-                isQuizFinished.value = true // Mark quiz as finished
+                isQuizFinished.value = true
             } else {
-                // Next question logic is now primarily in LaunchedEffect(currentQuestion)
-                // This ensures timer reset for the new question.
+                quizViewModel.nextQuestion()  // <-- Add this to go to next question automatically
             }
+
+            showFeedback.value = false // Hide feedback after delay
         }
     }
 
