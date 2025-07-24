@@ -1,4 +1,3 @@
-
 package com.example.flagquiz.view
 
 import android.os.Bundle
@@ -24,15 +23,15 @@ import com.example.flagquiz.R
 import com.example.flagquiz.ui.theme.FlagQuizTheme
 import com.example.flagquiz.viewmodel.QuizViewModel
 
-// RENAMED CLASS: Changed from QuizActivity to QuizScreenActivity to match manifest
+// I renamed this activity from QuizActivity to QuizScreenActivity to match it with my AndroidManifest
 class QuizScreenActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            // It's good practice to wrap your top-level composable in your app's theme
+            // Wrapped it in the app's theme for consistent look
             FlagQuizTheme {
                 QuizScreen(onFinishClicked = {
-                    // Finish the activity when the Finish button is clicked
+                    // When the user clicks finish, just close this screen
                     finish()
                 })
             }
@@ -44,22 +43,22 @@ class QuizScreenActivity : ComponentActivity() {
 fun QuizScreen(onFinishClicked: () -> Unit) {
     val quizViewModel: QuizViewModel = viewModel()
 
-    // Get the current question from the ViewModel
+    // I pull all necessary states from the ViewModel
     val currentQuestion = quizViewModel.getCurrentQuestion()
     val timeLeft = quizViewModel.timeLeft.value
     val isOptionSelected = quizViewModel.isOptionSelected.value
     val progress = quizViewModel.progress.value
-    val showHint = quizViewModel.showHint.value // Track if hint is shown
+    val showHint = quizViewModel.showHint.value
 
-    // State to manage feedback visibility
+    // These help show correct/incorrect message
     val showFeedback = remember { mutableStateOf(false) }
     val feedbackMessage = remember { mutableStateOf("") }
     val feedbackColor = remember { mutableStateOf(Color.Red) }
 
-    // Track if the quiz is finished
+    // Flag to check when quiz is done
     val isQuizFinished = remember { mutableStateOf(false) }
 
-    // Initialize the countdown timer (10 seconds per question)
+    // Used CountDownTimer to auto-move to next question every 10 seconds
     val timer = remember {
         object : CountDownTimer(10000, 1000) {
             override fun onTick(millisUntilFinished: Long) {
@@ -70,50 +69,47 @@ fun QuizScreen(onFinishClicked: () -> Unit) {
             override fun onFinish() {
                 quizViewModel.timeLeft.value = 0
                 quizViewModel.progress.value = 0f
-                if (!isOptionSelected) { // Only move to next if no option was selected
+                // If user didn't select any option, move to next question
+                if (!isOptionSelected) {
                     quizViewModel.nextQuestion()
                 }
             }
         }
     }
 
-    // Start the timer when the screen is loaded or when the question changes
+    // Restart the timer and reset feedback every time a new question loads
     LaunchedEffect(currentQuestion) {
         quizViewModel.resetTimer()
-        quizViewModel.showHint.value = false // Reset the hint when moving to a new question
+        quizViewModel.showHint.value = false
         timer.start()
-        showFeedback.value = false // Also reset feedback on new question
+        showFeedback.value = false
         feedbackMessage.value = ""
         feedbackColor.value = Color.Red
     }
 
-    // Handle option selection feedback and next question logic
+    // Wait a bit before moving to next question after option is selected
     LaunchedEffect(isOptionSelected) {
         if (isOptionSelected) {
-            timer.cancel() // Stop the timer once an option is selected
-            kotlinx.coroutines.delay(2000) // Delay for 2 seconds for feedback
-            showFeedback.value = false // Hide feedback after delay
+            timer.cancel()
+            kotlinx.coroutines.delay(2000) // Wait to show feedback
+            showFeedback.value = false
             if (quizViewModel.isLastQuestion()) {
-                isQuizFinished.value = true // Mark quiz as finished
-            } else {
-                // Next question logic is now primarily in LaunchedEffect(currentQuestion)
-                // This ensures timer reset for the new question.
+                isQuizFinished.value = true
             }
         }
     }
 
-
-    // Layout for displaying the quiz question with updated background color
+    // Main UI of quiz
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFFFCC99).copy(alpha = 0.8f)) // Set the background color with alpha
+            .background(Color(0xFFFFCC99).copy(alpha = 0.8f)) // Added soft background color
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
         if (isQuizFinished.value) {
-            // Display final score when the quiz is finished
+            // When quiz ends, show score and finish button
             Text(
                 text = "Your Score: ${quizViewModel.score.value}",
                 fontSize = 24.sp,
@@ -122,19 +118,15 @@ fun QuizScreen(onFinishClicked: () -> Unit) {
                 modifier = Modifier.padding(bottom = 20.dp)
             )
 
-            // Finish button to navigate back to the NavigationActivity
             Button(
-                onClick = {
-                    onFinishClicked() // Invoke the finish action passed from the parent activity
-                },
+                onClick = { onFinishClicked() },
                 modifier = Modifier.fillMaxWidth(0.8f),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF97B57)) // Finish button color
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF97B57))
             ) {
                 Text("Finish Quiz", color = Color.White)
             }
         } else {
-            // Display timer, flag, options, and other quiz elements
-
+            // Timer countdown display
             Text(
                 text = "$timeLeft",
                 fontSize = 40.sp,
@@ -142,8 +134,9 @@ fun QuizScreen(onFinishClicked: () -> Unit) {
                 modifier = Modifier.padding(bottom = 10.dp)
             )
 
+            // Progress bar
             LinearProgressIndicator(
-                progress = quizViewModel.progress.value,
+                progress = progress,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(20.dp)
@@ -153,6 +146,7 @@ fun QuizScreen(onFinishClicked: () -> Unit) {
             )
 
             currentQuestion?.let { question ->
+                // Show flag image for the question
                 Image(
                     painter = painterResource(id = question.flagImage),
                     contentDescription = "Flag",
@@ -162,10 +156,11 @@ fun QuizScreen(onFinishClicked: () -> Unit) {
                     contentScale = ContentScale.Fit
                 )
 
+                // Render all option buttons
                 question.options.forEach { option ->
                     Button(
                         onClick = {
-                            if (!isOptionSelected) { // Only allow selection if an option hasn't been chosen yet
+                            if (!isOptionSelected) {
                                 quizViewModel.selectedOption.value = option
                                 quizViewModel.isOptionSelected.value = true
                                 showFeedback.value = true
@@ -181,35 +176,30 @@ fun QuizScreen(onFinishClicked: () -> Unit) {
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(vertical = 8.dp),
-                        enabled = !isOptionSelected, // Disable buttons once an option is selected
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color.White // Option buttons color set to white
-                        )
+                        enabled = !isOptionSelected,
+                        colors = ButtonDefaults.buttonColors(containerColor = Color.White)
                     ) {
                         Text(text = option, color = Color.Black)
                     }
                 }
             }
 
-            // Display the Hint Button only when no option is selected and hint isn't already shown
+            // Show hint button if not shown already
             if (!isOptionSelected && !showHint) {
                 Button(
                     onClick = {
-                        quizViewModel.showHint.value = true // Show the hint when clicked
+                        quizViewModel.showHint.value = true
                     },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 20.dp),
-                    // enabled = !isOptionSelected, // This is redundant due to the 'if' condition
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFFF97B57) // Hint button color
-                    )
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF97B57))
                 ) {
                     Text("Show Hint: Capital City", color = Color.White)
                 }
             }
 
-            // Display the capital city hint if it's available
+            // Show the capital city as a hint
             if (showHint && currentQuestion != null) {
                 Text(
                     text = "Capital: ${currentQuestion.capitalHint}",
@@ -220,7 +210,7 @@ fun QuizScreen(onFinishClicked: () -> Unit) {
                 )
             }
 
-            // Display Feedback (Correct or Incorrect)
+            // Show feedback for selected option
             if (showFeedback.value) {
                 Text(
                     text = feedbackMessage.value,
@@ -231,32 +221,25 @@ fun QuizScreen(onFinishClicked: () -> Unit) {
                 )
             }
 
-            // Conditionally display "Finish Quiz" or "Next Question" button
-            // This logic is slightly adjusted to ensure 'Next Question' button appears only after an option is selected.
-            // The isQuizFinished.value check handles the final state.
-            if (isOptionSelected) { // Only show next/finish button if an option has been selected
+            // Show either Finish or Next Question button after answering
+            if (isOptionSelected) {
                 if (quizViewModel.isLastQuestion()) {
                     Button(
-                        onClick = {
-                            onFinishClicked() // Invoke the finish action passed from the parent activity
-                        },
+                        onClick = { onFinishClicked() },
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(top = 20.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF97B57)) // Finish button color
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF97B57))
                     ) {
                         Text("Finish", color = Color.White)
                     }
                 } else {
-                    // This button should ideally trigger the next question after feedback
-                    // The LaunchedEffect(isOptionSelected) already handles automatic next question after delay.
-                    // This button might be for manual advancement if user doesn't want to wait.
                     Button(
                         onClick = { quizViewModel.nextQuestion() },
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(top = 20.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF97B57)) // Next Question button color
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF97B57))
                     ) {
                         Text("Next Question", color = Color.White)
                     }
@@ -269,7 +252,7 @@ fun QuizScreen(onFinishClicked: () -> Unit) {
 @Preview(showBackground = true)
 @Composable
 fun PreviewQuizScreen() {
-    FlagQuizTheme  {
-        QuizScreen(onFinishClicked = { /* Do nothing for preview */ })
+    FlagQuizTheme {
+        QuizScreen(onFinishClicked = { /* Nothing here for preview */ })
     }
 }
