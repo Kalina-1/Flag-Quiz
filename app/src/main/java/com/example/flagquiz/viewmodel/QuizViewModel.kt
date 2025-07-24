@@ -8,7 +8,7 @@ import com.example.flagquiz.R
 import kotlin.random.Random
 
 class QuizViewModel : ViewModel() {
-    // Pool of 30 questions
+    // List of all 30 questions with flags, options, correct answer, and capital hint
     private val allQuestions = listOf<Question>(
         Question(
             flagImage = R.drawable.nepal,
@@ -204,15 +204,15 @@ class QuizViewModel : ViewModel() {
         )
     )
 
-    // Randomly select 10 questions from the pool
+    // Pick 10 random questions from the big list
     private val selectedQuestions = allQuestions.shuffled().take(10)
 
-    // Shuffle the options for each question
+    // Shuffle the options inside each question so it’s not always the same order
     private val shuffledQuestions = selectedQuestions.map { question ->
         question.copy(options = question.options.shuffled()) // Shuffle the options
     }
 
-    // Track current question index
+    // Keep track of which question user is on
     private var currentQuestionIndex = 0
 
     // Track score
