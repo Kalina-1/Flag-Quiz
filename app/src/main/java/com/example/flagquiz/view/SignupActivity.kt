@@ -42,13 +42,15 @@ import com.example.flagquiz.model.User
 
 class SignupActivity : ComponentActivity() {
 
+    // Firebase authentication and realtime database instances
     private lateinit var auth: FirebaseAuth
     private lateinit var database: FirebaseDatabase
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+        enableEdgeToEdge() // removes status bar space for full UI experience
 
+        // initialize Firebase
         auth = FirebaseAuth.getInstance()
         database = FirebaseDatabase.getInstance()
 
@@ -58,11 +60,12 @@ class SignupActivity : ComponentActivity() {
                     val sharedPreferences = getSharedPreferences("User", MODE_PRIVATE)
                     val context = this
 
+                    // Building the signup screen with input validations and Firebase logic
                     SignupBody(
                         innerPadding = innerPadding,
                         onRegisterAttempt = { fullName, email, country, password, termsAccepted ->
 
-                            // Basic input validation before Firebase call
+                            // just some quick sanity checks before trying to sign up
                             if (fullName.isBlank()) {
                                 Toast.makeText(context, "Please enter your full name.", Toast.LENGTH_SHORT).show()
                                 return@SignupBody
@@ -88,13 +91,14 @@ class SignupActivity : ComponentActivity() {
                                 return@SignupBody
                             }
 
-                            // Firebase Authentication signup
+                            // finally, try to register using Firebase Auth
                             auth.createUserWithEmailAndPassword(email, password)
                                 .addOnCompleteListener(this) { task ->
                                     if (task.isSuccessful) {
                                         val firebaseUser = auth.currentUser
                                         firebaseUser?.let { user ->
 
+                                            // used to split full name to store first and last separately
                                             val nameParts = fullName.trim().split(" ")
 
                                             val newUser = User(
@@ -106,10 +110,11 @@ class SignupActivity : ComponentActivity() {
                                                 address = country
                                             )
 
-                                            // Save additional user data in Realtime Database
+                                            // save extra user info in Firebase Realtime DB
                                             database.getReference("users").child(user.uid).setValue(newUser)
                                                 .addOnCompleteListener { dbTask ->
                                                     if (dbTask.isSuccessful) {
+                                                        // store locally as well (optional but useful)
                                                         val editor = sharedPreferences.edit()
                                                         editor.putString("fullName", fullName)
                                                         editor.putString("email", email)
@@ -117,6 +122,8 @@ class SignupActivity : ComponentActivity() {
                                                         editor.apply()
 
                                                         Toast.makeText(context, "Signup successful!", Toast.LENGTH_SHORT).show()
+
+                                                        // go to main screen
                                                         startActivity(Intent(context, NavigationActivity::class.java))
                                                         finish()
                                                     } else {
@@ -125,12 +132,12 @@ class SignupActivity : ComponentActivity() {
                                                 }
                                         }
                                     } else {
-                                        // Here you can customize error messages based on exception type if needed
                                         Toast.makeText(context, "Authentication failed: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
                                     }
                                 }
                         },
                         onLoginClick = {
+                            // navigate to login screen
                             startActivity(Intent(context, LoginActivity::class.java))
                             finish()
                         }
@@ -148,6 +155,7 @@ fun SignupBody(
     onRegisterAttempt: (fullName: String, email: String, country: String, password: String, termsAccepted: Boolean) -> Unit,
     onLoginClick: () -> Unit
 ) {
+    // form states (local to UI only)
     var fullName by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -166,6 +174,7 @@ fun SignupBody(
             .padding(innerPadding)
             .fillMaxSize()
     ) {
+        // background image for style
         Image(
             painter = painterResource(id = R.drawable.flags),
             contentDescription = null,
@@ -176,11 +185,12 @@ fun SignupBody(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = 16.dp)
-                .background(Color(0xFFFFCC99).copy(alpha = 0.8f)),
+                .background(Color(0xFFFFCC99).copy(alpha = 0.8f)), // added a soft background overlay
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Spacer(modifier = Modifier.height(50.dp))
 
+            // Full Name Field
             OutlinedTextField(
                 value = fullName,
                 onValueChange = { fullName = it },
@@ -190,7 +200,10 @@ fun SignupBody(
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true
             )
+
             Spacer(modifier = Modifier.height(12.dp))
+
+            // Email Field
             OutlinedTextField(
                 value = email,
                 onValueChange = { email = it },
@@ -201,15 +214,17 @@ fun SignupBody(
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true
             )
+
             Spacer(modifier = Modifier.height(12.dp))
+
+            // Password Field
             OutlinedTextField(
                 value = password,
                 onValueChange = { password = it },
                 label = { Text("Password") },
                 leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null) },
                 trailingIcon = {
-                    val visibilityIcon = if (showPassword) R.drawable.baseline_visibility_24
-                    else R.drawable.baseline_visibility_off_24
+                    val visibilityIcon = if (showPassword) R.drawable.baseline_visibility_24 else R.drawable.baseline_visibility_off_24
                     Icon(
                         painter = painterResource(id = visibilityIcon),
                         contentDescription = "Toggle password visibility",
@@ -222,15 +237,17 @@ fun SignupBody(
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true
             )
+
             Spacer(modifier = Modifier.height(12.dp))
+
+            // Re-enter Password Field
             OutlinedTextField(
                 value = reenterPassword,
                 onValueChange = { reenterPassword = it },
                 label = { Text("Re-enter Password") },
                 leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null) },
                 trailingIcon = {
-                    val visibilityIcon = if (showReenterPassword) R.drawable.baseline_visibility_24
-                    else R.drawable.baseline_visibility_off_24
+                    val visibilityIcon = if (showReenterPassword) R.drawable.baseline_visibility_24 else R.drawable.baseline_visibility_off_24
                     Icon(
                         painter = painterResource(id = visibilityIcon),
                         contentDescription = "Toggle re-enter password visibility",
@@ -243,7 +260,10 @@ fun SignupBody(
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true
             )
+
             Spacer(modifier = Modifier.height(12.dp))
+
+            // Country Dropdown
             ExposedDropdownMenuBox(
                 expanded = expanded,
                 onExpandedChange = { expanded = !expanded },
@@ -279,13 +299,29 @@ fun SignupBody(
                     }
                 }
             }
+
             Spacer(modifier = Modifier.height(16.dp))
-//            Row(
-//                verticalAlignment = Alignment.CenterVertically,
-//                modifier = Modifier.padding(bottom = 16.dp)
-//            )
 
+            // Terms Checkbox
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(bottom = 16.dp)
+            ) {
+                Checkbox(
+                    checked = termsAccepted,
+                    onCheckedChange = { termsAccepted = it },
+                    colors = CheckboxDefaults.colors(checkedColor = Color(0xFFF97B57))
+                )
+                Text(
+                    "I agree to Terms and Privacy Policy.",
+                    fontSize = 14.sp,
+                    modifier = Modifier.clickable {
+                        // maybe in the future: open terms URL
+                    }
+                )
+            }
 
+            // Signup Button
             Button(
                 onClick = {
                     if (password == reenterPassword) {
@@ -301,24 +337,21 @@ fun SignupBody(
             ) {
                 Text("Signup", color = Color.White)
             }
+
             Spacer(modifier = Modifier.height(16.dp))
+
+            // Login redirect
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center
             ) {
-                Text(
-                    "Already have an account? ",
-                    color = Color.Black,
-                    fontSize = 14.sp
-                )
+                Text("Already have an account? ", color = Color.Black, fontSize = 14.sp)
                 Text(
                     "Log In",
                     color = Color(0xFF673AB7),
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold,
-                    modifier = Modifier.clickable {
-                        onLoginClick()
-                    }
+                    modifier = Modifier.clickable { onLoginClick() }
                 )
             }
         }

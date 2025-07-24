@@ -1,4 +1,3 @@
-
 package com.example.flagquiz.view
 
 import android.content.Intent
@@ -30,11 +29,13 @@ import com.example.flagquiz.ui.theme.FlagQuizTheme
 class ResultActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+        enableEdgeToEdge() // So UI can go behind system bars, looks modern
 
+        // Get the quiz result data passed from previous screen
         val correctAnswers = intent.getIntExtra("correct_answers", 0)
         val totalQuestions = intent.getIntExtra("total_questions", 0)
 
+        // Set the Compose UI content
         setContent {
             FlagQuizTheme {
                 Scaffold { innerPadding ->
@@ -43,10 +44,12 @@ class ResultActivity : ComponentActivity() {
                         correctAnswers = correctAnswers,
                         totalQuestions = totalQuestions,
                         onRestartQuiz = {
+                            // Restart quiz by launching QuizScreenActivity again
                             startActivity(Intent(this, QuizScreenActivity::class.java))
                             finish()
                         },
                         onExit = {
+                            // Just close this activity and exit results screen
                             finish()
                         }
                     )
@@ -64,6 +67,7 @@ fun ResultScreen(
     onRestartQuiz: () -> Unit,
     onExit: () -> Unit
 ) {
+    // Calculate the score percentage out of total questions
     val score = (correctAnswers.toFloat() / totalQuestions.toFloat()) * 100
     val context = LocalContext.current
 
@@ -72,6 +76,7 @@ fun ResultScreen(
             .padding(innerPadding)
             .fillMaxSize()
     ) {
+        // Background image with flags filling entire screen
         Image(
             painter = painterResource(id = R.drawable.flags),
             contentDescription = null,
@@ -79,6 +84,7 @@ fun ResultScreen(
             contentScale = ContentScale.Crop
         )
 
+        // Semi-transparent overlay container for content readability
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -87,6 +93,7 @@ fun ResultScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
+            // Big title at the top of the results page
             Text(
                 text = "Quiz Results",
                 fontSize = 36.sp,
@@ -95,7 +102,7 @@ fun ResultScreen(
                 modifier = Modifier.padding(bottom = 24.dp)
             )
 
-
+            // Circle showing the score with color coding based on performance
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier
@@ -111,12 +118,14 @@ fun ResultScreen(
                     .border(4.dp, Color.Black, RoundedCornerShape(100.dp))
             ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    // Show percentage big and bold
                     Text(
                         text = "${score.toInt()}%",
                         fontSize = 48.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color.White
                     )
+                    // Show raw correct/total numbers below it
                     Text(
                         text = "$correctAnswers / $totalQuestions",
                         fontSize = 24.sp,
@@ -127,7 +136,7 @@ fun ResultScreen(
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // Performance message
+            // Motivational message based on how well the user did
             Text(
                 text = when {
                     score >= 80 -> "Excellent! You know your flags well!"
@@ -142,7 +151,7 @@ fun ResultScreen(
 
             Spacer(modifier = Modifier.height(48.dp))
 
-            // Action buttons
+            // Buttons for retrying quiz or exiting result screen
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly
@@ -184,6 +193,7 @@ fun ResultScreen(
 @Preview(showBackground = true)
 @Composable
 fun ResultScreenPreview() {
+    // Just a preview of the ResultScreen composable with some sample data
     FlagQuizTheme {
         ResultScreen(
             innerPadding = PaddingValues(0.dp),
