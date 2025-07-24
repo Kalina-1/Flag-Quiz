@@ -280,23 +280,12 @@ fun SignupBody(
                 }
             }
             Spacer(modifier = Modifier.height(16.dp))
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(bottom = 16.dp)
-            ) {
-                Checkbox(
-                    checked = termsAccepted,
-                    onCheckedChange = { termsAccepted = it },
-                    colors = CheckboxDefaults.colors(checkedColor = Color(0xFFF97B57))
-                )
-                Text(
-                    "I agree to Terms and Privacy Policy.",
-                    fontSize = 14.sp,
-                    modifier = Modifier.clickable {
-                        // Optional: Navigate to terms/privacy policy screen or open URL
-                    }
-                )
-            }
+//            Row(
+//                verticalAlignment = Alignment.CenterVertically,
+//                modifier = Modifier.padding(bottom = 16.dp)
+//            )
+
+
             Button(
                 onClick = {
                     if (password == reenterPassword) {
