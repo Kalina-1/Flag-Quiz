@@ -78,11 +78,6 @@ class SignupActivity : ComponentActivity() {
                                 return@SignupBody
                             }
 
-                            if (!termsAccepted) {
-                                Toast.makeText(context, "Please accept terms and privacy policy.", Toast.LENGTH_SHORT).show()
-                                return@SignupBody
-                            }
-
                             if (country.isBlank() || country == "Select Country") {
                                 Toast.makeText(context, "Please select a country.", Toast.LENGTH_SHORT).show()
                                 return@SignupBody
