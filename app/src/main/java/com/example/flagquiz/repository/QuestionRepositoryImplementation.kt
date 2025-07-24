@@ -6,7 +6,7 @@ import com.example.flagquiz.model.Question
 
 class QuestionRepositoryImpl : QuestionRepository {
 
-    // Sample data, replace with actual data fetching logic (e.g., from API or local DB)
+    // Sample data, replace with actual data fetching logic
     override suspend fun getQuestions(): List<Question> {
         return listOf(
             Question(
