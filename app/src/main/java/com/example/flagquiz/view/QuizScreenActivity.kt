@@ -1,6 +1,7 @@
 
 package com.example.flagquiz.view
 
+import android.content.Intent
 import android.os.Bundle
 import android.os.CountDownTimer
 import androidx.activity.ComponentActivity
@@ -32,10 +33,13 @@ class QuizScreenActivity : ComponentActivity() {
             // It's good practice to wrap your top-level composable in your app's theme
             FlagQuizTheme {
                 QuizScreen(onFinishClicked = {
-                    // Finish the activity when the Finish button is clicked
-                    finish()
+                    val intent = Intent(this, NavigationActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+                    startActivity(intent)
+                    finish()  // Finish QuizScreenActivity so user can’t go back here
                 })
             }
+
         }
     }
 }
