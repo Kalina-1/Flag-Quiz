@@ -52,7 +52,7 @@ class QuizViewModelTest {
         // Checking if the answer is correct
         val isCorrect = quizViewModel.checkAnswer(incorrectAnswer)
 
-        // Assert: Verify that the answer is incorrect
+        // Assert: Verifying that the answer is incorrect and the score remains 0
         TestCase.assertFalse("Answer should be incorrect", isCorrect)
         TestCase.assertEquals("Score should still be 0", 0, quizViewModel.score.value)
     }
