@@ -5,6 +5,7 @@ import junit.framework.TestCase
 import org.junit.Before
 import org.junit.Test
 
+// This class tests different button interactions and behaviors in the QuizViewModel.
 class QuizButtonInteractionTest {
 
     private lateinit var quizViewModel: QuizViewModel
