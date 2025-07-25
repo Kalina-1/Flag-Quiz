@@ -54,7 +54,7 @@ class QuizButtonInteractionTest {
         // Act: Simulate checking the correct answer
         quizViewModel.checkAnswer(correctAnswer)
 
-        // Assert: Verify that the score is updated after answering correctly
+        // Assert: Verify that the score increases by 1 after the correct answer is selected
         TestCase.assertEquals("Score should be 1 after correct answer", 1, quizViewModel.score.value)
     }
 
