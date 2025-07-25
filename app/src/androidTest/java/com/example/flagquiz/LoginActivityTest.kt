@@ -42,6 +42,7 @@ class LoginActivityTest {
     // Test case to check if login with valid credentials navigates the user to the next screen.
     @Test
     fun testLoginWithValidCredentials_Navigates() {
+        // Entering a valid email into the email field.
         composeTestRule.onNodeWithTag("login_email_field").performTextInput("test@example.com")
         composeTestRule.onNodeWithTag("login_password_field").performTextInput("testpassword")
         composeTestRule.onNodeWithTag("login_button").performClick()
