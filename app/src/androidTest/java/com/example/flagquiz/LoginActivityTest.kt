@@ -21,6 +21,7 @@ class LoginActivityTest {
     // Test case to check if the elements on the login screen are visible.
     @Test
     fun testLoginScreenElementsVisible() {
+        // Checking if the email field is displayed.
         composeTestRule.onNodeWithTag("login_email_field").assertIsDisplayed()
         composeTestRule.onNodeWithTag("login_password_field").assertIsDisplayed()
         composeTestRule.onNodeWithTag("login_button").assertIsDisplayed()
