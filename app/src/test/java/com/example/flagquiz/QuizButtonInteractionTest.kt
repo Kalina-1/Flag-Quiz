@@ -18,6 +18,7 @@ class QuizButtonInteractionTest {
         quizViewModel = QuizViewModel() // Initialize the ViewModel for the quiz screen
     }
 
+    // Test to check if the option buttons get disabled after the user selects an option.
     @Test
     fun testOptionButtonDisabledAfterSelection() {
         // Arrange: Select the first option
