@@ -9,6 +9,7 @@ import org.junit.Test
 // This class contains tests for the QuizViewModel, which handles the logic for the quiz.
 class QuizViewModelTest {
 
+    // Declaring a variable to hold the QuizViewModel instance
     private lateinit var quizViewModel: QuizViewModel
 
     @Before
