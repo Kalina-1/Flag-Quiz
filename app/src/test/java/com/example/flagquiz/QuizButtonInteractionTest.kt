@@ -58,6 +58,7 @@ class QuizButtonInteractionTest {
         TestCase.assertEquals("Score should be 1 after correct answer", 1, quizViewModel.score.value)
     }
 
+    // Test to check if the timer resets when moving to the next question.
     @Test
     fun testTimerResetsForNextQuestion() {
         // Arrange: Set a custom time (e.g., 5 seconds)
