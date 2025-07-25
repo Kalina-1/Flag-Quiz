@@ -49,7 +49,7 @@ class QuizViewModelTest {
         // Getting an incorrect answer (dummy answer in this case)
         val incorrectAnswer = "Incorrect Answer"
 
-        // Check if the answer is correct
+        // Checking if the answer is correct
         val isCorrect = quizViewModel.checkAnswer(incorrectAnswer)
 
         // Assert: Verify that the answer is incorrect
