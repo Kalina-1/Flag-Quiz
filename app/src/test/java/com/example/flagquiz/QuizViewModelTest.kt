@@ -27,6 +27,7 @@ class QuizViewModelTest {
         TestCase.assertNotNull("Current question should not be null", currentQuestion)
     }
 
+    // Test to check if the current question is properly retrieved.
     @Test
     fun testCheckAnswer_CorrectAnswer() {
         // Get the current question and correct answer
