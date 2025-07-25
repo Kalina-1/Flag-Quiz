@@ -161,6 +161,7 @@ fun SettingsScreen(onSignOut: () -> Unit) {
     }
 }
 
+// Reusable component for settings sections
 @Composable
 fun SettingsSection(title: String, content: @Composable () -> Unit) {
     Column(modifier = Modifier.fillMaxWidth()) {
