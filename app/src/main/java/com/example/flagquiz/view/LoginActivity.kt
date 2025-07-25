@@ -24,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -33,10 +34,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.flagquiz.R
+import com.example.flagquiz.model.User
 import com.example.flagquiz.ui.theme.FlagQuizTheme
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
-import com.example.flagquiz.model.User
 
 class LoginActivity : ComponentActivity() {
 
@@ -50,11 +51,7 @@ class LoginActivity : ComponentActivity() {
         auth = FirebaseAuth.getInstance()
         database = FirebaseDatabase.getInstance()
 
-        setContent {
-            FlagQuizTheme {
-                LoginBody(auth, database)
-            }
-        }
+        // Don't call setContent here in the activity, it will be handled by the test
     }
 }
 
@@ -64,13 +61,12 @@ fun LoginBody(auth: FirebaseAuth, database: FirebaseDatabase) {
     var password by remember { mutableStateOf("") }
     var showPassword by remember { mutableStateOf(false) }
     var rememberMe by remember { mutableStateOf(false) }
+    var loginError by remember { mutableStateOf<String?>(null) } // Added for error message
 
     val context = LocalContext.current
     val sharedPreferences = context.getSharedPreferences("User", Context.MODE_PRIVATE)
 
-    Box(
-        modifier = Modifier.fillMaxSize()
-    ) {
+    Box(modifier = Modifier.fillMaxSize()) {
         Image(
             painter = painterResource(R.drawable.flags),
             contentDescription = null,
@@ -95,10 +91,10 @@ fun LoginBody(auth: FirebaseAuth, database: FirebaseDatabase) {
                 leadingIcon = { Icon(Icons.Default.Email, contentDescription = null) },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                 shape = RoundedCornerShape(8.dp),
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag("email") // Ensure this testTag is here
             )
-
-            Spacer(modifier = Modifier.height(12.dp))
 
             OutlinedTextField(
                 value = password,
@@ -119,8 +115,11 @@ fun LoginBody(auth: FirebaseAuth, database: FirebaseDatabase) {
                 else PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                 shape = RoundedCornerShape(8.dp),
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag("password") // Ensure this testTag is here
             )
+
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -143,6 +142,11 @@ fun LoginBody(auth: FirebaseAuth, database: FirebaseDatabase) {
             }
 
             Spacer(modifier = Modifier.height(24.dp))
+
+            // Show error message here if login fails
+            loginError?.let {
+                Text(text = it, color = Color.Red, fontSize = 14.sp) // Display error
+            }
 
             Button(
                 onClick = {
@@ -196,7 +200,7 @@ fun LoginBody(auth: FirebaseAuth, database: FirebaseDatabase) {
                                         }
                                 }
                             } else {
-                                Toast.makeText(context, "Authentication failed: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+                                loginError = "Authentication failed: ${task.exception?.message}" // Set error message
                             }
                         }
                 },

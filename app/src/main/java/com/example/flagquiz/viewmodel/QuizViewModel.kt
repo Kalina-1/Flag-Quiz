@@ -208,30 +208,15 @@ class QuizViewModel : ViewModel() {
     private val selectedQuestions = allQuestions.shuffled().take(10)
 
     // Shuffle the options for each question
-    private val shuffledQuestions = selectedQuestions.map { question ->
-        question.copy(options = question.options.shuffled()) // Shuffle the options
-    }
+    private val shuffledQuestions = selectedQuestions.map { it.copy(options = it.options.shuffled()) }
 
-    // Track current question index
     private var currentQuestionIndex = 0
-
-    // Track score
     val score = mutableStateOf(0)
-
-    // Mutable state values for quiz
     val timeLeft = mutableStateOf(10)
-    val isOptionSelected = mutableStateOf(false)
+    val isOptionSelected = mutableStateOf(false) // Track if an option is selected
     val selectedOption = mutableStateOf<String?>(null)
     val progress = mutableStateOf(0f)
-
-    // Correctly define showHint as mutableStateOf
-    val showHint = mutableStateOf(false) // To track whether to show the hint button or not
-
-    // Method to reset hint when moving to the next question
-    fun resetHint() {
-        showHint.value = false
-    }
-
+    val showHint = mutableStateOf(false)
 
     // Return the current question
     fun getCurrentQuestion(): Question? {
@@ -244,6 +229,9 @@ class QuizViewModel : ViewModel() {
         if (isCorrect) {
             score.value += 1 // Increment score if the answer is correct
         }
+        // Mark that an option has been selected
+        isOptionSelected.value = true
+        selectedOption.value = selected
         return isCorrect
     }
 
@@ -251,12 +239,11 @@ class QuizViewModel : ViewModel() {
     fun nextQuestion() {
         if (currentQuestionIndex < shuffledQuestions.size - 1) {
             currentQuestionIndex++
+            // Reset states for the next question
             isOptionSelected.value = false
             selectedOption.value = null
             timeLeft.value = 10  // Reset the timer to 10 seconds
             progress.value = 0f
-        } else {
-            // End of quiz, handle the completion
         }
     }
 
@@ -269,5 +256,22 @@ class QuizViewModel : ViewModel() {
     // Check if it's the last question
     fun isLastQuestion(): Boolean {
         return currentQuestionIndex == shuffledQuestions.size - 1
+    }
+
+    // **Getter methods for testing:**
+
+    // Get current question index
+    fun getCurrentQuestionIndex(): Int {
+        return currentQuestionIndex
+    }
+
+    // Get shuffled questions (useful for testing)
+    fun getShuffledQuestions(): List<Question> {
+        return shuffledQuestions
+    }
+
+    // Reset hint value
+    fun resetHint() {
+        showHint.value = false
     }
 }
