@@ -51,7 +51,7 @@ class QuizButtonInteractionTest {
         // Arrange: Get the current question and provide the correct answer
         val correctAnswer = quizViewModel.getCurrentQuestion()?.correctAnswer
 
-        // Act: Check if the answer is correct
+        // Act: Simulate checking the correct answer
         quizViewModel.checkAnswer(correctAnswer)
 
         // Assert: Verify that the score is updated after answering correctly
