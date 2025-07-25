@@ -46,6 +46,7 @@ class LoginActivityTest {
         composeTestRule.onNodeWithTag("login_email_field").performTextInput("test@example.com")
         // Entering a valid password into the password field.
         composeTestRule.onNodeWithTag("login_password_field").performTextInput("testpassword")
+        // Clicking the login button to attempt login.
         composeTestRule.onNodeWithTag("login_button").performClick()
 
         // You may check navigation, or mock ViewModel to return isAuthenticated = true
