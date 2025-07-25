@@ -18,6 +18,7 @@ class LoginActivityTest {
     @get:Rule
     val composeTestRule = createAndroidComposeRule<LoginActivity>()
 
+    // Test case to check if the elements on the login screen are visible.
     @Test
     fun testLoginScreenElementsVisible() {
         composeTestRule.onNodeWithTag("login_email_field").assertIsDisplayed()
