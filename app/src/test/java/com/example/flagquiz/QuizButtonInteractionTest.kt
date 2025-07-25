@@ -8,6 +8,7 @@ import org.junit.Test
 // This class tests different button interactions and behaviors in the QuizViewModel.
 class QuizButtonInteractionTest {
 
+    // Declaring a variable to hold the QuizViewModel instance, which handles quiz logic.
     private lateinit var quizViewModel: QuizViewModel
 
     @Before
