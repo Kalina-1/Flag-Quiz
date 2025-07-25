@@ -4,8 +4,8 @@ package com.example.flagquiz.model
 // It contains information about the flag image,
 // a list of possible answers, the correct answer,
 // and a hint about the capital city of the country represented by the flag.
-// the correct answer itself, and a little hint about the capital city.
-// Makes it easy to pass around all question details together.
+// This makes it easier to organize and share all the details of a question together.
+
 data class Question(
     val flagImage: Int,
     val options: List<String>,
