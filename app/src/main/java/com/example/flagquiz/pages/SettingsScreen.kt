@@ -170,6 +170,7 @@ fun SettingsSection(title: String, content: @Composable () -> Unit) {
     }
 }
 
+// Component to display about the app section
 @Composable
 fun AboutAppSection() {
     Column(modifier = Modifier.fillMaxWidth()) {
