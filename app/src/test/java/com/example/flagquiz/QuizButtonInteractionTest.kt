@@ -21,7 +21,7 @@ class QuizButtonInteractionTest {
     // Test to check if the option buttons get disabled after the user selects an option.
     @Test
     fun testOptionButtonDisabledAfterSelection() {
-        // Arrange: Select the first option
+        // Arrange: Selecting the first option from the list of available options
         val option = quizViewModel.getCurrentQuestion()?.options?.first()
 
         // Act: Choose the option
