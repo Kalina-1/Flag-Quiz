@@ -58,6 +58,12 @@ fun LoginBody(viewModel: LoginViewModel) {
     val loginError by remember { viewModel.loginError }
     val isAuthenticated by remember { viewModel.isAuthenticated }
 
+    // State for Remember Me checkbox
+    var isRememberMeChecked by remember { mutableStateOf(false) }
+
+    // State for password visibility
+    var showPassword by remember { mutableStateOf(false) }
+
     // Show loading or success UI based on authentication
     if (isAuthenticated) {
         // Navigate to the next screen (after login is successful)
@@ -99,16 +105,15 @@ fun LoginBody(viewModel: LoginViewModel) {
                 label = { Text("Password") },
                 leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null) },
                 trailingIcon = {
+                    // Show different icons based on the password visibility state
+                    val visibilityIcon = if (showPassword) R.drawable.baseline_visibility_24 else R.drawable.baseline_visibility_off_24
                     Icon(
-                        painter = painterResource(
-                            if (viewModel.password.value.isNotEmpty()) R.drawable.baseline_visibility_24
-                            else R.drawable.baseline_visibility_off_24
-                        ),
+                        painter = painterResource(id = visibilityIcon),
                         contentDescription = "Toggle password visibility",
-                        modifier = Modifier.clickable { }
+                        modifier = Modifier.clickable { showPassword = !showPassword }
                     )
                 },
-                visualTransformation = if (viewModel.password.value.isNotEmpty()) VisualTransformation.None else PasswordVisualTransformation(),
+                visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                 shape = RoundedCornerShape(8.dp),
                 modifier = Modifier.fillMaxWidth()
@@ -116,18 +121,20 @@ fun LoginBody(viewModel: LoginViewModel) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Remember Me Checkbox
-            var isChecked by remember { mutableStateOf(false) }
             Row(
+                modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Checkbox(
-                    checked = isChecked,
-                    onCheckedChange = { isChecked = it },
-                    colors = CheckboxDefaults.colors(checkedColor = Color(0xFF673AB7))
-                )
-                Text("Remember Me", fontSize = 12.sp)
+                // Remember Me Checkbox
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Checkbox(
+                        checked = isRememberMeChecked,
+                        onCheckedChange = { isRememberMeChecked = it },
+                        colors = CheckboxDefaults.colors(checkedColor = Color(0xFF673AB7))
+                    )
+                    Text("Remember Me", fontSize = 12.sp)
+                }
             }
 
             Spacer(modifier = Modifier.height(24.dp))
