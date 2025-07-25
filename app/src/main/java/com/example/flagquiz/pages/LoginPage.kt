@@ -1,4 +1,4 @@
-package com.example.flagquiz
+package com.example.flagquiz.pages
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
