@@ -57,6 +57,7 @@ class QuizViewModelTest {
         TestCase.assertEquals("Score should still be 0", 0, quizViewModel.score.value)
     }
 
+    // Test to check if moving to the next question works as expected.
     @Test
     fun testNextQuestion() {
         // Get the current question index using the getter
