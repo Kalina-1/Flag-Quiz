@@ -18,6 +18,7 @@ class QuizViewModelTest {
         quizViewModel = QuizViewModel() // Initialize the ViewModel
     }
 
+    // Test to check if the current question is properly retrieved.
     @Test
     fun testGetCurrentQuestion() {
         // Get the current question
