@@ -49,6 +49,6 @@ class LoginActivityTest {
         // Clicking the login button to attempt login.
         composeTestRule.onNodeWithTag("login_button").performClick()
 
-        // You may check navigation, or mock ViewModel to return isAuthenticated = true
+        // You may check if the screen navigates, or mock authentication logic to confirm successful login.
     }
 }
