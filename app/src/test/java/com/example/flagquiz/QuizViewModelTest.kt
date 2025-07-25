@@ -21,7 +21,7 @@ class QuizViewModelTest {
     // Test to check if the current question is properly retrieved.
     @Test
     fun testGetCurrentQuestion() {
-        // Get the current question
+        // Getting the current question from the ViewModel
         val currentQuestion = quizViewModel.getCurrentQuestion()
 
         // Assert: Verify that the question is not null
