@@ -31,6 +31,7 @@ class QuizButtonInteractionTest {
         TestCase.assertTrue("The option button should be disabled after selection", quizViewModel.isOptionSelected.value)
     }
 
+    // Test to check if the "Next Question" button becomes visible and enabled after selecting an answer.
     @Test
     fun testNextQuestionButtonVisibility() {
         // Arrange: Select an option first to enable the "Next Question" button
