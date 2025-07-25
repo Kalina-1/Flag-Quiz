@@ -29,6 +29,8 @@ class LoginActivityTest {
         composeTestRule.onNodeWithTag("login_button").assertIsDisplayed()
     }
 
+
+    // Test case to check if an error message appears when login fields are empty.
     @Test
     fun testLoginWithEmptyFields_ShowsError() {
         composeTestRule.onNodeWithTag("login_button").performClick()
