@@ -41,7 +41,7 @@ class QuizButtonInteractionTest {
         // Act: Check whether the "Next Question" button is enabled (visible and interactive)
         val isNextQuestionButtonEnabled = quizViewModel.isOptionSelected.value
 
-        // Assert: Verify that the "Next Question" button is visible and enabled after selection
+        // Assert: Verify that the "Next Question" button is enabled after an option is selected
         TestCase.assertTrue("The 'Next Question' button should be enabled after an option is selected", isNextQuestionButtonEnabled)
     }
 
