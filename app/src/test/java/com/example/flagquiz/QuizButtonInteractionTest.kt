@@ -27,7 +27,7 @@ class QuizButtonInteractionTest {
         // Act: Simulate the user selecting the option and checking the answer
         quizViewModel.checkAnswer(option)
 
-        // Assert: The button for selecting options should be disabled after an answer is selected
+        // Assert: Verify that the option button is disabled after selection (the option should not be selectable again)
         TestCase.assertTrue("The option button should be disabled after selection", quizViewModel.isOptionSelected.value)
     }
 
