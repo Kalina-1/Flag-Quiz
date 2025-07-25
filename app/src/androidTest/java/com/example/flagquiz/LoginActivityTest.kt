@@ -25,6 +25,7 @@ class LoginActivityTest {
         composeTestRule.onNodeWithTag("login_email_field").assertIsDisplayed()
         // Checking if the password field is displayed.
         composeTestRule.onNodeWithTag("login_password_field").assertIsDisplayed()
+        // Checking if the login button is displayed.
         composeTestRule.onNodeWithTag("login_button").assertIsDisplayed()
     }
 
