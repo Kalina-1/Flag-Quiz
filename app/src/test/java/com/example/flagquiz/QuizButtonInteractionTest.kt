@@ -67,7 +67,7 @@ class QuizButtonInteractionTest {
         // Act: Move to the next question
         quizViewModel.nextQuestion()
 
-        // Assert: Verify that the timer resets to 10 seconds for the new question
+        // Assert: Verify that the timer resets to 10 seconds when a new question is presented
         TestCase.assertEquals("Timer should reset to 10 seconds after moving to the next question", 10, quizViewModel.timeLeft.value)
     }
 }
