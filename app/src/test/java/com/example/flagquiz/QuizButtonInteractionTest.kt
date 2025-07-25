@@ -24,7 +24,7 @@ class QuizButtonInteractionTest {
         // Arrange: Selecting the first option from the list of available options
         val option = quizViewModel.getCurrentQuestion()?.options?.first()
 
-        // Act: Choose the option
+        // Act: Simulate the user selecting the option and checking the answer
         quizViewModel.checkAnswer(option)
 
         // Assert: The button for selecting options should be disabled after an answer is selected
