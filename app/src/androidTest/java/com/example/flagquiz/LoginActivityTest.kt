@@ -44,6 +44,7 @@ class LoginActivityTest {
     fun testLoginWithValidCredentials_Navigates() {
         // Entering a valid email into the email field.
         composeTestRule.onNodeWithTag("login_email_field").performTextInput("test@example.com")
+        // Entering a valid password into the password field.
         composeTestRule.onNodeWithTag("login_password_field").performTextInput("testpassword")
         composeTestRule.onNodeWithTag("login_button").performClick()
 
