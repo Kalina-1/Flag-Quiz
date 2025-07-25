@@ -2,6 +2,7 @@ package com.example.flagquiz.model
 
 // This class represents a quiz question.
 // It contains information about the flag image,
+// a list of possible answers, the correct answer,
 // the correct answer itself, and a little hint about the capital city.
 // Makes it easy to pass around all question details together.
 data class Question(
