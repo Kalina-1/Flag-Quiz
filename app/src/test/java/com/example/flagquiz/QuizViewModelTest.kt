@@ -31,7 +31,7 @@ class QuizViewModelTest {
     // Test to check if the correct answer is being processed correctly.
     @Test
     fun testCheckAnswer_CorrectAnswer() {
-        // Get the current question and correct answer
+        // Getting the current question and its correct answer
         val currentQuestion = quizViewModel.getCurrentQuestion()
         val correctAnswer = currentQuestion?.correctAnswer
 
