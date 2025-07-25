@@ -185,6 +185,7 @@ fun AboutAppSection() {
     }
 }
 
+// Preview function to display the Settings Screen UI
 @Preview(showBackground = true)
 @Composable
 fun PreviewSettingsScreen() {
