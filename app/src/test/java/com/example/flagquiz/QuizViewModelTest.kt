@@ -24,7 +24,7 @@ class QuizViewModelTest {
         // Getting the current question from the ViewModel
         val currentQuestion = quizViewModel.getCurrentQuestion()
 
-        // Assert: Verify that the question is not null
+        // Assert: Verifying that the current question is not null (it should exist)
         TestCase.assertNotNull("Current question should not be null", currentQuestion)
     }
 
