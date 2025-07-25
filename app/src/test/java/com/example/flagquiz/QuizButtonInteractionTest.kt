@@ -45,6 +45,7 @@ class QuizButtonInteractionTest {
         TestCase.assertTrue("The 'Next Question' button should be enabled after an option is selected", isNextQuestionButtonEnabled)
     }
 
+    // Test to check if the score gets updated after answering a question correctly.
     @Test
     fun testScoreUpdatesAfterCorrectAnswer() {
         // Arrange: Get the current question and answer it correctly
