@@ -6,6 +6,7 @@ import junit.framework.TestCase
 import org.junit.Before
 import org.junit.Test
 
+// This class contains tests for the QuizViewModel, which handles the logic for the quiz.
 class QuizViewModelTest {
 
     private lateinit var quizViewModel: QuizViewModel
