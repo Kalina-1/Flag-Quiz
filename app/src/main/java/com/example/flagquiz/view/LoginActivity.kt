@@ -23,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -97,6 +98,7 @@ fun LoginBody(viewModel: LoginViewModel) {
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                 shape = RoundedCornerShape(8.dp),
                 modifier = Modifier.fillMaxWidth()
+                    .testTag("login_email_field")
             )
 
             OutlinedTextField(
@@ -111,12 +113,14 @@ fun LoginBody(viewModel: LoginViewModel) {
                         painter = painterResource(id = visibilityIcon),
                         contentDescription = "Toggle password visibility",
                         modifier = Modifier.clickable { showPassword = !showPassword }
+
                     )
                 },
                 visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                 shape = RoundedCornerShape(8.dp),
                 modifier = Modifier.fillMaxWidth()
+                    .testTag("login_password_field")
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -147,7 +151,8 @@ fun LoginBody(viewModel: LoginViewModel) {
                 onClick = {
                     viewModel.login() // Trigger login in ViewModel
                 },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth()
+                    .testTag("login_button"),
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF97B57)),
                 shape = RoundedCornerShape(8.dp)
             ) {

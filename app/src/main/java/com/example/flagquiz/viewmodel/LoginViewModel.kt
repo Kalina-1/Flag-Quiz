@@ -16,6 +16,11 @@ class LoginViewModel : ViewModel() {
     private val database: FirebaseDatabase = FirebaseDatabase.getInstance()
 
     fun login() {
+        if (email.value.isBlank() || password.value.isBlank()) {
+            loginError.value = "Invalid login"  // or your preferred error message
+            return
+        }
+
         auth.signInWithEmailAndPassword(email.value, password.value)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
@@ -42,4 +47,5 @@ class LoginViewModel : ViewModel() {
                 }
             }
     }
+
 }
