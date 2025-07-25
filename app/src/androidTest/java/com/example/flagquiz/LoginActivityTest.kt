@@ -10,6 +10,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
+// Annotating the class to specify it runs with AndroidJUnit4, which is used for Android tests.
 @RunWith(AndroidJUnit4::class)
 class LoginActivityTest {
 
