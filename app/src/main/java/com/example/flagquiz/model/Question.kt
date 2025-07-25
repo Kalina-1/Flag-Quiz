@@ -1,3 +1,4 @@
+package com.example.flagquiz.model
 
 // This class holds all the info for a quiz question:
 // the flag image resource, a list of answer options,
