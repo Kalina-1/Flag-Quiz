@@ -12,6 +12,7 @@ class QuizViewModelTest {
     // Declaring a variable to hold the QuizViewModel instance
     private lateinit var quizViewModel: QuizViewModel
 
+    // This method is executed before each test. It initializes the QuizViewModel object.
     @Before
     fun setUp() {
         quizViewModel = QuizViewModel() // Initialize the ViewModel
