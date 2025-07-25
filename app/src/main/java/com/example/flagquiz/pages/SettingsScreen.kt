@@ -31,7 +31,7 @@ fun SettingsScreen(onSignOut: () -> Unit) {
     val database = FirebaseDatabase.getInstance()
     val currentUser = auth.currentUser
 
-    // State for editable fields
+    // State variables to hold the editable fields' data
     var usernameState by remember { mutableStateOf("") }
     var emailState by remember { mutableStateOf("") }
 
