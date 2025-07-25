@@ -143,6 +143,7 @@ fun SettingsScreen(onSignOut: () -> Unit) {
 
         Spacer(modifier = Modifier.height(20.dp))
 
+        // Log Out Button
         Button(
             onClick = {
                 Toast.makeText(context, "Logging out...", Toast.LENGTH_SHORT).show()
