@@ -1,4 +1,3 @@
-
 package com.example.flagquiz.pages
 
 import android.content.Intent
@@ -15,7 +14,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.platform.LocalContext
 import com.example.flagquiz.view.QuizScreenActivity
-import kotlin.jvm.java
 
 @Composable
 fun HomeScreen() {
@@ -48,16 +46,6 @@ fun HomeScreen() {
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF97B57))  // Orange button color
         ) {
             Text("Start New Quiz", color = Color.White)
-        }
-        Spacer(modifier = Modifier.height(20.dp))
-
-        // View High Scores button with orange color (functionality to be added later)
-        Button(
-            onClick = { /* View High Scores logic */ },
-            modifier = Modifier.fillMaxWidth(0.8f).height(56.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF97B57)) // Orange button color
-        ) {
-            Text(text = "View High Scores", color = Color.White)
         }
     }
 }

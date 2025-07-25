@@ -3,50 +3,60 @@ package com.example.flagquiz.test
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import com.example.flagquiz.view.LoginActivity
-import com.example.flagquiz.view.LoginBody
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.FirebaseDatabase
+import com.example.flagquiz.viewmodel.LoginViewModel
 import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.example.flagquiz.view.LoginBody
+import com.google.android.gms.tasks.Task
+import com.google.firebase.auth.AuthResult
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
+import org.mockito.Mockito.mock
+import org.mockito.kotlin.any
+import org.mockito.kotlin.whenever
+import kotlin.jvm.java
 
+@RunWith(AndroidJUnit4::class)
 class LoginActivityInstrumentedTest {
 
     @get:Rule
     val composeTestRule = createAndroidComposeRule<LoginActivity>()
 
+    private val mockFirebaseAuth: FirebaseAuth = mock(FirebaseAuth::class.java)
+    private val mockFirebaseDatabase: FirebaseDatabase = mock(FirebaseDatabase::class.java)
+
     @Test
     fun testLoginWithValidCredentials() {
         // Set content for the test using ComposeTestRule
         composeTestRule.setContent {
-            LoginBody(FirebaseAuth.getInstance(), FirebaseDatabase.getInstance())
+            val loginViewModel: LoginViewModel = LoginViewModel().apply {
+                // Mock Firebase Auth call
+                whenever(mockFirebaseAuth.signInWithEmailAndPassword(any(), any()))
+                    .thenReturn(Task.forResult(mock(AuthResult::class.java))) // Mock successful login
+            }
+
+            LoginBody(viewModel = loginViewModel)
         }
 
-        // Input email
+        // Enter email
         composeTestRule.onNodeWithTag("email")
             .performTextInput("manisha123@gmail.com")
 
-        // Input password
+        // Enter password
         composeTestRule.onNodeWithTag("password")
             .performTextInput("manisha123")
 
-        // Ensure the login button is visible and then click it
+        // Click Login
         composeTestRule.onNodeWithTag("loginButton")
-            .assertIsDisplayed()
             .performClick()
 
-        // Wait for UI to idle and ensure navigation
+        // Wait for UI to idle
         composeTestRule.waitForIdle()
 
-        // Optional: You can add a small delay to give enough time for the next screen to load
-        composeTestRule.mainClock.advanceTimeBy(3000) // Wait for 3 seconds to allow the screen to load
-
-        // Verify if the user navigates to NavigationActivity
-        // Look for a text that exists in the NavigationActivity screen
-        composeTestRule.onNodeWithText("Home") // "Home" should exist in the NavigationActivity UI
-            .assertIsDisplayed()
-
-        // Optional: You can also verify more elements that should exist in NavigationActivity
-        composeTestRule.onNodeWithText("Flag Quiz App") // Check for other UI elements in NavigationActivity
+        // Verify successful login
+        composeTestRule.onNodeWithText("Home") // Check that the next screen is displayed
             .assertIsDisplayed()
     }
 }

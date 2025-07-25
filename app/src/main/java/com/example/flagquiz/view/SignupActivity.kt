@@ -63,7 +63,7 @@ class SignupActivity : ComponentActivity() {
                     // Building the signup screen with input validations and Firebase logic
                     SignupBody(
                         innerPadding = innerPadding,
-                        onRegisterAttempt = { fullName, email, country, password, termsAccepted ->
+                        onRegisterAttempt = { fullName, email, country, password ->
 
                             // just some quick sanity checks before trying to sign up
                             if (fullName.isBlank()) {
@@ -78,11 +78,6 @@ class SignupActivity : ComponentActivity() {
 
                             if (password.length < 6) {
                                 Toast.makeText(context, "Password should be at least 6 characters.", Toast.LENGTH_SHORT).show()
-                                return@SignupBody
-                            }
-
-                            if (!termsAccepted) {
-                                Toast.makeText(context, "Please accept terms and privacy policy.", Toast.LENGTH_SHORT).show()
                                 return@SignupBody
                             }
 
@@ -152,7 +147,7 @@ class SignupActivity : ComponentActivity() {
 @Composable
 fun SignupBody(
     innerPadding: PaddingValues,
-    onRegisterAttempt: (fullName: String, email: String, country: String, password: String, termsAccepted: Boolean) -> Unit,
+    onRegisterAttempt: (fullName: String, email: String, country: String, password: String) -> Unit,
     onLoginClick: () -> Unit
 ) {
     // form states (local to UI only)
@@ -162,7 +157,6 @@ fun SignupBody(
     var reenterPassword by remember { mutableStateOf("") }
     var showPassword by remember { mutableStateOf(false) }
     var showReenterPassword by remember { mutableStateOf(false) }
-    var termsAccepted by remember { mutableStateOf(false) }
     var selectedCountry by remember { mutableStateOf("Select Country") }
     var expanded by remember { mutableStateOf(false) }
 
@@ -302,30 +296,11 @@ fun SignupBody(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Terms Checkbox
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(bottom = 16.dp)
-            ) {
-                Checkbox(
-                    checked = termsAccepted,
-                    onCheckedChange = { termsAccepted = it },
-                    colors = CheckboxDefaults.colors(checkedColor = Color(0xFFF97B57))
-                )
-                Text(
-                    "I agree to Terms and Privacy Policy.",
-                    fontSize = 14.sp,
-                    modifier = Modifier.clickable {
-                        // maybe in the future: open terms URL
-                    }
-                )
-            }
-
             // Signup Button
             Button(
                 onClick = {
                     if (password == reenterPassword) {
-                        onRegisterAttempt(fullName, email, selectedCountry, password, termsAccepted)
+                        onRegisterAttempt(fullName, email, selectedCountry, password)
                     } else {
                         Toast.makeText(context, "Passwords do not match", Toast.LENGTH_SHORT).show()
                     }
@@ -364,7 +339,7 @@ fun SignupPreview() {
     FlagQuizTheme {
         SignupBody(
             innerPadding = PaddingValues(0.dp),
-            onRegisterAttempt = { _, _, _, _, _ -> },
+            onRegisterAttempt = { _, _, _, _ -> },
             onLoginClick = { }
         )
     }

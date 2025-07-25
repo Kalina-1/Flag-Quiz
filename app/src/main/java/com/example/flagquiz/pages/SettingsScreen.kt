@@ -1,14 +1,12 @@
 package com.example.flagquiz.pages
 
 import android.content.Context
-import android.content.Intent
 import android.widget.Toast
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.* // Ensure this includes OutlinedTextField and its related components
-import androidx.compose.runtime.* // IMPORTANT: Import for remember, mutableStateOf, LaunchedEffect
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -18,11 +16,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.flagquiz.view.LoginActivity
-
-// Add Firebase imports
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
-import android.util.Log // IMPORTANT: Import for Log.e
+import android.util.Log
+import androidx.compose.foundation.border
 
 @OptIn(ExperimentalMaterial3Api::class) // Needed for OutlinedTextField
 @Composable
@@ -43,11 +40,13 @@ fun SettingsScreen(onSignOut: () -> Unit) {
         if (currentUser != null) {
             val userRef = database.getReference("users").child(currentUser.uid)
             userRef.get().addOnSuccessListener { dataSnapshot ->
+                // Log the data fetched from Firebase
+                Log.d("SettingsScreen", "User data fetched: $dataSnapshot")
+
                 usernameState = dataSnapshot.child("username").getValue(String::class.java) ?: currentUser.displayName ?: "Guest"
                 emailState = dataSnapshot.child("email").getValue(String::class.java) ?: currentUser.email ?: "Not provided"
             }.addOnFailureListener {
-                // Handle error loading data from Firebase
-                Toast.makeText(context, "Failed to load user data: ${it.message}", Toast.LENGTH_SHORT).show()
+                // Log failure
                 Log.e("SettingsScreen", "Error loading user data from Firebase", it)
 
                 // Fallback to SharedPreferences if Firebase fails to load
@@ -171,30 +170,6 @@ fun SettingsSection(title: String, content: @Composable () -> Unit) {
     }
 }
 
-// UserInfoCard is likely no longer needed if you're directly using OutlinedTextFields
-// You can remove it or keep it if it's used elsewhere.
-// @Composable
-// fun UserInfoCard(label: String, value: String) {
-//     Card(
-//         modifier = Modifier
-//             .fillMaxWidth()
-//             .padding(vertical = 8.dp),
-//         shape = RoundedCornerShape(12.dp),
-//         colors = CardDefaults.cardColors(containerColor = Color(0xFFF9F9F9))
-//     ) {
-//         Row(
-//             modifier = Modifier
-//                 .fillMaxWidth()
-//                 .padding(16.dp),
-//             verticalAlignment = Alignment.CenterVertically
-//         ) {
-//             Text(text = "$label: ", fontWeight = FontWeight.Bold, fontSize = 16.sp)
-//             Spacer(modifier = Modifier.width(8.dp))
-//             Text(text = value, fontSize = 16.sp)
-//         }
-//     }
-// }
-
 @Composable
 fun AboutAppSection() {
     Column(modifier = Modifier.fillMaxWidth()) {
@@ -215,4 +190,3 @@ fun AboutAppSection() {
 fun PreviewSettingsScreen() {
     SettingsScreen(onSignOut = {})
 }
-
