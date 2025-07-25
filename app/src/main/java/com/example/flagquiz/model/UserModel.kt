@@ -8,5 +8,5 @@ data class User(
     var email: String? = null, // The user's email address
     var firstName: String? = null, // The user's first name
     var lastName: String? = null, // The user's last name
-    var address: String? = null
+    var address: String? = null // The user's address
 )
