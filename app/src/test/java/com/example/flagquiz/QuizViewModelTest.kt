@@ -46,7 +46,7 @@ class QuizViewModelTest {
     // Test to check the scenario when the user selects an incorrect answer.
     @Test
     fun testCheckAnswer_IncorrectAnswer() {
-        // Get the current question and an incorrect answer
+        // Getting an incorrect answer (dummy answer in this case)
         val incorrectAnswer = "Incorrect Answer"
 
         // Check if the answer is correct
