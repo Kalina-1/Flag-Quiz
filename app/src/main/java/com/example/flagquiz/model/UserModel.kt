@@ -7,6 +7,6 @@ data class User(
     var username: String? = null, // The username chosen by the user
     var email: String? = null, // The user's email address
     var firstName: String? = null, // The user's first name
-    var lastName: String? = null,
+    var lastName: String? = null, // The user's last name
     var address: String? = null
 )
