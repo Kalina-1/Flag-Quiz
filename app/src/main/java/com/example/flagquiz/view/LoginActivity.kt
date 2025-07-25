@@ -116,22 +116,18 @@ fun LoginBody(viewModel: LoginViewModel) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            // Remember Me Checkbox
+            var isChecked by remember { mutableStateOf(false) }
             Row(
-                modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
+                modifier = Modifier.fillMaxWidth()
             ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Checkbox(
-                        checked = false,
-                        onCheckedChange = { },
-                        colors = CheckboxDefaults.colors(checkedColor = Color(0xFF673AB7))
-                    )
-                    Text("Remember Me", fontSize = 12.sp)
-                }
-                TextButton(onClick = { }) {
-                    Text("Forgot Password?", color = Color(0xFF673AB7), fontSize = 12.sp)
-                }
+                Checkbox(
+                    checked = isChecked,
+                    onCheckedChange = { isChecked = it },
+                    colors = CheckboxDefaults.colors(checkedColor = Color(0xFF673AB7))
+                )
+                Text("Remember Me", fontSize = 12.sp)
             }
 
             Spacer(modifier = Modifier.height(24.dp))
