@@ -38,7 +38,7 @@ class QuizViewModelTest {
         // Checking if the answer is correct using the ViewModel's checkAnswer function
         val isCorrect = quizViewModel.checkAnswer(correctAnswer)
 
-        // Assert: Verify that the answer is correct and score is updated
+        // Assert: Verifying that the answer is correct and the score is updated to 1
         TestCase.assertTrue("Answer should be correct", isCorrect)
         TestCase.assertEquals("Score should be 1", 1, quizViewModel.score.value)
     }
