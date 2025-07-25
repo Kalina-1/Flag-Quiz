@@ -43,6 +43,7 @@ class QuizViewModelTest {
         TestCase.assertEquals("Score should be 1", 1, quizViewModel.score.value)
     }
 
+    // Test to check the scenario when the user selects an incorrect answer.
     @Test
     fun testCheckAnswer_IncorrectAnswer() {
         // Get the current question and an incorrect answer
