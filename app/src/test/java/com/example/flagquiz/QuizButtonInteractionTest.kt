@@ -11,6 +11,8 @@ class QuizButtonInteractionTest {
     // Declaring a variable to hold the QuizViewModel instance, which handles quiz logic.
     private lateinit var quizViewModel: QuizViewModel
 
+    // This method is run before each test to set up the environment.
+    // It initializes the QuizViewModel, which is the main logic for the quiz.
     @Before
     fun setUp() {
         quizViewModel = QuizViewModel() // Initialize the ViewModel for the quiz screen
