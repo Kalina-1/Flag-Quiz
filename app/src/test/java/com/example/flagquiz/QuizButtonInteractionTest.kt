@@ -48,7 +48,7 @@ class QuizButtonInteractionTest {
     // Test to check if the score gets updated after answering a question correctly.
     @Test
     fun testScoreUpdatesAfterCorrectAnswer() {
-        // Arrange: Get the current question and answer it correctly
+        // Arrange: Get the current question and provide the correct answer
         val correctAnswer = quizViewModel.getCurrentQuestion()?.correctAnswer
 
         // Act: Check if the answer is correct
